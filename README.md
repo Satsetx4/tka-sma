@@ -1,42 +1,28 @@
-# Golden Starter: Web App Boilerplate untuk Ard
+# TKA SMA — Latihan & Simulasi
 
-Boilerplate resmi dan starter kit siap pakai yang dioptimalkan untuk alur kerja **Vibe Coding** dengan standar:
-- **Mobile-First Paradigm:** Didesain dari layar HP (360–420px) dengan target sentuh jempol (minimal 44x44px).
-- **Living & Tactile UI:** Respons taktil pegas alami (`framer-motion`), border tipis elegan, dan anti-dead-flat.
-- **Navigasi Anti-Tersesat:** Header dengan tombol kembali eksplisit, navigasi bawah 1-tap Home, dan proteksi layar buntu.
-- **Inline Data Bars:** Batang perbandingan anggaran otomatis beranimasi in-view saat digulir.
+Cockpit ujian presisi buat latihan Tes Kemampuan Akademik SMA kelas 12. Tanpa login, nilai ke-track di HP.
 
----
+**Live:** https://tka-sma-sekawan.vercel.app
 
-## Tech Stack
-- **Framework:** Vite + React 19 + TypeScript
-- **Styling:** Tailwind CSS v4 (`@tailwindcss/vite`)
-- **Animasi:** `framer-motion`
-- **Ikon:** `lucide-react`
-- **Utility:** `clsx` + `tailwind-merge`
+## Isi
+- **Latihan per mapel** — 20 soal/mapel, kunci + pembahasan langsung tiap jawab
+- **Simulasi Full TKA** — 60 soal campur 3 mapel, countdown 90:00, peta nomor, tandai ragu-ragu, waktu habis auto kumpul
+- **Hasil** — skor count-up, bedah per mapel, pembahasan filter Semua/Salah, tombol Ulangi/Beranda (anti nyasar)
+- **Riwayat** — 50 percobaan terakhir tersimpan di HP (localStorage)
+- **3 mapel wajib x 20 soal:** Matematika, Bahasa Indonesia, Bahasa Inggris (60 soal + pembahasan, kunci A–E seimbang 12-12-12-12-12)
 
----
+## Stack
+- Vite + React 19 + TypeScript, Tailwind CSS v4, framer-motion, lucide-react
+- HP-first (max-w-md), dark elegant + toggle terang, spring 300/30, tap 0.97
 
-## Komponen Siap Pakai (`src/components/`)
-1. `layout/MobileContainer.tsx` — Wrapper layout mobile-first yang rapi di layar ponsel dan desktop.
-2. `navigation/AppHeader.tsx` — Header konsisten dengan tombol kembali `< Kembali` dan judul layar.
-3. `navigation/MobileBottomNav.tsx` — Navigasi bawah dengan fluid pill slider (`layoutId`) dan akses 1-tap Home.
-4. `ui/TapButton.tsx` — Tombol taktil membal saat disentuh (`scale: 0.97`) dengan berbagai varian warna.
-5. `ui/LivingCard.tsx` — Kartu visual dengan border 1px, subtle elevation, dan opsi frosted glass.
-6. `ui/InlineDataBar.tsx` — Batang data mini untuk perbandingan rasio/anggaran dengan animasi scroll in-view.
-7. `ui/ScrollProgress.tsx` — Indikator kedalaman scroll di puncak layar.
-
----
-
-## Cara Menjalankan Dev Server
+## Jalanin lokal
 ```bash
-# Di terminal Windows PowerShell
-npm.cmd run dev
+npm install
+npm run dev   # http://localhost:5173 (buka IP LAN di HP)
+npm run build # output dist/
 ```
-*Vite sudah dikonfigurasi dengan mode `--host` sehingga link IP lokal (misal: `http://192.168.x.x:5173`) dapat langsung dibuka di browser HP-mu.*
 
----
-
-## Cara Menduplikasi untuk Proyek Baru (5 Detik)
-Kapan pun kamu ingin membuat web app baru, cukup katakan kepada AI:
-> *"Duplikasi golden-starter menjadi proyek [nama-aplikasi] dan mulai dari Lean PRD."*
+## Deploy
+```bash
+vercel deploy --prod --yes .
+```
