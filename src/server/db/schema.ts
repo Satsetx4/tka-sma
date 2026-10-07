@@ -1,8 +1,9 @@
 // P2.5 + P2.6 + P2.7 — Tabel question/content, learning, dan tryout. Placeholder
 // registry dipertahankan di bawah: P2.3 (subjects/topics/subtopics/skills)
 // DITAHAN menunggu P1.6 freeze — JANGAN daftarkan tabel taksonomi sebelum itu.
-// P2.9/P2.10 — Blok auth (users/sessions/accounts/verifications/user_profiles)
-// mengikuti docs/decisions/P2-auth-decision.md (Better Auth, sesi DB-backed).
+// P2.9/P2.10 — Blok auth (users/sessions/accounts/verifications/user_profiles
+// + user_role) — tabel implementasi di bawah, mengikuti
+// docs/decisions/P2-auth-decision.md (Better Auth, sesi DB-backed).
 import {
   boolean,
   index,
@@ -381,6 +382,114 @@ export const tryoutAnswers = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// P2.9/P2.10 — Auth tables (Better Auth + kolom role + user_profiles).
+// Mengikuti docs/decisions/P2-auth-decision.md (Better Auth, sesi DB-backed
+// di Neon via adapter Drizzle). Field mengikuti skema bawaan Better Auth
+// (model user/session/account/verification) + kolom `role` di users.
+//
+// Kebijakan role V1: "student" | "editor" | "reviewer" | "admin"
+// (student = default untuk murid; CMS memakai 3 peran non-student).
+//
+// Konvensi nama: tabel + kolom snake_case (selaras tabel lain di file ini);
+// adapter menerima `usePlural: true` sehingga key jamak terpetakan otomatis.
+// ---------------------------------------------------------------------------
+
+/** Peran pengguna V1 (docs/DATABASE.md + decision P2-auth). */
+export const userRoleEnum = pgEnum("user_role", ["student", "editor", "reviewer", "admin"]);
+
+/** Identitas pengguna (model `user` Better Auth + kolom role). */
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: text("image"),
+  role: userRoleEnum("role").notNull().default("student"),
+  banned: boolean("banned"),
+  banReason: text("ban_reason"),
+  banExpires: timestamp("ban_expires", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+/** Sesi login aktif (model `session` Better Auth, DB-backed). */
+export const sessions = pgTable(
+  "sessions",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    token: text("token").notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    impersonatedBy: text("impersonated_by"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("sessions_user_id_idx").on(t.userId)],
+);
+
+/** Kredensial login (model `account` Better Auth; email+password = provider `credential`). */
+export const accounts = pgTable(
+  "accounts",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    accountId: text("account_id").notNull(),
+    providerId: text("provider_id").notNull(),
+    accessToken: text("access_token"),
+    refreshToken: text("refresh_token"),
+    accessTokenExpiresAt: timestamp("access_token_expires_at", { withTimezone: true }),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { withTimezone: true }),
+    scope: text("scope"),
+    idToken: text("id_token"),
+    password: text("password"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("accounts_user_id_idx").on(t.userId)],
+);
+
+/** Token verifikasi sekali pakai (model `verification` Better Auth). */
+export const verifications = pgTable(
+  "verifications",
+  {
+    id: text("id").primaryKey(),
+    identifier: text("identifier").notNull(),
+    value: text("value").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("verifications_identifier_idx").on(t.identifier)],
+);
+
+/**
+ * Profil + preferensi murid (docs/DATABASE.md). Satu baris per user
+ * (dibuat saat registrasi via databaseHooks); FK cascade mengikuti users.
+ */
+export const userProfiles = pgTable("user_profiles", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  displayName: text("display_name"),
+  // Preferensi non-skalar sebagai JSONB (bentuk V1 minimal, cth: { "theme": "dark" }).
+  preferences: jsonb("preferences"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+// ---------------------------------------------------------------------------
 // Registry — satu-satunya jalan masuk skema (dipakai drizzle.config + barrel).
 // P2.3 (subjects/topics/subtopics/skills) DITAHAN menunggu P1.6 freeze —
 // JANGAN daftarkan tabel taksonomi di sini sebelum P2.3 dikerjakan.
@@ -395,6 +504,7 @@ export const schema = {
   mistakeStatusEnum,
   tryoutTemplateStatusEnum,
   tryoutSessionStatusEnum,
+  userRoleEnum,
   stimuli,
   questions,
   questionOptions,
@@ -407,4 +517,9 @@ export const schema = {
   tryoutTemplates,
   tryoutSessions,
   tryoutAnswers,
+  users,
+  sessions,
+  accounts,
+  verifications,
+  userProfiles,
 };

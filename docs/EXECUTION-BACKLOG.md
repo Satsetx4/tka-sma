@@ -304,6 +304,8 @@ Dependency: P2.8
 Acceptance:
 session survives refresh and protects private routes.
 
+QA (orchestrator, 2026-10-08): [x] Better Auth 1.7.7 server-only (email+password, sesi DB 7 hari + sliding 1 hari, cookie tka-sma, plugin admin+nextCookies; singleton malas agar build hijau tanpa env) + /api/auth/[...all] (503 JSON rapi tanpa env) + middleware (admin→307 /login?next, api/cms→401 JSON; edge-safe cek cookie) + login (server action, pesan generik, anti open-redirect) + unauthorized 403. LIVE: API 401 pesan login (bukan 503), admin→login 200 form email+kata sandi. BELUM-live: login sungguhan + refresh + migrate (butuh DATABASE_URL + BETTER_AUTH_SECRET + BETTER_AUTH_URL).
+
 ## P2.10 Add role model
 Dependency: P2.9
 
@@ -312,6 +314,8 @@ Roles:
 - editor
 - reviewer
 - admin
+
+QA: [x] kolom role + roles.ts murni (BelumLogin 401/PeranDitolak 403, normalkanSesi, putuskanAkses) + guard.ts kontrak-taat-CMS (getSession fail-closed null/requireRole/requireLogin) + adapter CMS jadi re-export statis + alias @ (tsconfig.app; adapter pakai path relatif karena Turbopack abaikan paths tsconfig.app) + seed admin env-driven idempoten (ADMIN_EMAIL/PASSWORD min-8/NAME; nol hardcode). 11 test auth, total 51/51 pass.
 
 ## P2.11 Implement StorageService interface
 Dependency: P0 complete
