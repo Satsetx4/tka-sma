@@ -75,4 +75,4 @@ It must be preserved conceptually where useful, but the production foundation wi
 
 ## Current next task
 
-P0.1–P0.6 complete (P0.3/P0.4 merged as #3, QA pass: dark/light screenshots verified, 320px no overflow). Next: **P0.7** Vercel verification (preview deploy, production config, no secret exposed) — then HG1 foundation approval.
+Phase 0 COMPLETE (P0.1–P0.7, QA pass all). Live: tka-sma-umber.vercel.app 200 (Next.js, Vite retired). STOP at **HG1** — menunggu owner approval sebelum Phase 1–2. Lihat laporan HG1 di chat 2026-10-07.

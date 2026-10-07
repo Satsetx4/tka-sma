@@ -137,12 +137,14 @@ QA (orchestrator, 2026-10-07): lint exit 0 (2 non-blocking warnings), typecheck 
 Dependency: P0.2, P0.6
 
 Tasks:
-- [ ] preview deploy succeeds
-- [ ] production config remains valid
-- [ ] no Blob/DB secret exposed client-side
+- [x] preview deploy succeeds
+- [x] production config remains valid
+- [x] no Blob/DB secret exposed client-side
 
 Acceptance:
 Vercel preview healthy.
+
+QA (orchestrator, 2026-10-07): preview + production sempat failure — bukan salah kode (build Next.js sukses di log) melainkan setting dashboard warisan Vite (framework: vite, outputDirectory: dist). Diperbaiki via PATCH /v9/projects/tka-sma (framework: nextjs, build/output: null) memakai CLI login tvtclard-9052 yang di-approve owner via device flow. Redeploy (commit 4e88fc9) success; live tka-sma-umber.vercel.app 200 berisi Home Next.js (title + "Cockpit Ujian Presisi"). No-secret: nol env/secret di repo maupun config. Phase 0 exit gate terpenuhi — NEXT: HG1 approval.
 
 Phase 0 exit gate:
 - Next.js replaces Vite on canonical branch
