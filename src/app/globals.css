@@ -1,6 +1,5 @@
-/* Fondasi visual global shell Next.js (P0.3) — port dari src/index.css milik Vite.
-   Kedua berkas dijaga tetap sejiwa: token font display, varian dark, scrollbar,
-   dan reduced-motion. Murni presentasi — tanpa logika belajar (store/data). */
+/* Fondasi visual global shell Next.js (P0.3) — diport dari prototipe Vite
+   (arsip: archive/vite-prototype-2026-10-07). Murni presentasi. */
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
