@@ -60,16 +60,18 @@ Goal:
 Replace Vite bootstrap with a minimal Next.js App Router shell.
 
 Tasks:
-- [ ] install/configure Next.js
-- [ ] establish `src/app`
-- [ ] preserve TypeScript strictness
-- [ ] preserve Tailwind styling capability
+- [x] install/configure Next.js
+- [x] establish `src/app`
+- [x] preserve TypeScript strictness
+- [x] preserve Tailwind styling capability
 - [ ] remove Vite-only bootstrap/config only after Next build works
 
 Acceptance:
 - dev server works
 - production build works
 - no secret/client issue
+
+QA (orchestrator, 2026-10-07): dev HTTP 200, build:next exit 0, build:vite exit 0 (identical output), typecheck/test/lint green, no secret, Vite kept until P0.7. Fix: agentRules false (stop next dev injecting AGENTS.md); Turbopack panic fixed via clean .next.
 
 ## P0.3 Port global visual foundation
 Dependency: P0.2
@@ -102,26 +104,30 @@ Acceptance:
 Dependency: P0.2
 
 Create:
-- [ ] `src/components`
-- [ ] `src/features`
-- [ ] `src/domain`
-- [ ] `src/server`
-- [ ] `tests`
+- [x] `src/components`
+- [x] `src/features`
+- [x] `src/domain`
+- [x] `src/server`
+- [x] `tests`
 
 Acceptance:
 - documented boundaries respected
+
+QA (orchestrator, 2026-10-07): 5 READMEs in Indonesian, boundaries per ARCHITECTURE.md.
 
 ## P0.6 Tooling gates
 Dependency: P0.2
 
 Tasks:
-- [ ] `npm run lint`
-- [ ] `npm run typecheck`
-- [ ] `npm run test` baseline
-- [ ] `npm run build`
+- [x] `npm run lint`
+- [x] `npm run typecheck`
+- [x] `npm run test` baseline
+- [x] `npm run build`
 
 Acceptance:
 all commands pass.
+
+QA (orchestrator, 2026-10-07): lint exit 0 (2 non-blocking warnings), typecheck exit 0, test pass 1 (node:test smoke), build:next + build:vite exit 0.
 
 ## P0.7 Vercel verification
 Dependency: P0.2, P0.6
