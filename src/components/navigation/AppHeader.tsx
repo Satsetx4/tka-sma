@@ -1,3 +1,6 @@
+"use client";
+
+// Header sticky — batas client untuk App Router (pakai framer-motion).
 import React from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";

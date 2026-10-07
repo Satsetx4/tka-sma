@@ -1,3 +1,6 @@
+"use client";
+
+// Bar data inline — batas client untuk App Router (pakai framer-motion).
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
