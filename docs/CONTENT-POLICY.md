@@ -33,6 +33,22 @@ Subject
 → Question
 ```
 
+## Human academic review
+
+Automated schema validation does **not** replace academic review.
+
+Every question intended for production publication must receive human review for:
+- factual/mathematical correctness,
+- answer-key correctness,
+- ambiguity,
+- explanation quality,
+- appropriateness for TKA scope,
+- source/provenance where relevant.
+
+Agents may prepare drafts, metadata, structured content, tests, and automated checks autonomously. They may not self-approve academic correctness for production publication.
+
+This continuous reviewer requirement is separate from the four owner-level human gates in `docs/HUMAN-GATES.md`.
+
 ## Publish gate
 
 A question cannot be published without:
