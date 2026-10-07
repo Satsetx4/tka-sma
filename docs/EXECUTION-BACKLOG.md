@@ -365,11 +365,15 @@ QA: [x] Zod v4 schemas + validator publish-gate + 15 test (valid + malformed dit
 ## P3.3 Text renderer
 Dependency: P3.1
 
+QA: [x] TextBlock + halaman demo /preview-soal.
+
 ## P3.4 Math/LaTeX renderer
 Dependency: P3.1
 
 Acceptance:
 long formulas do not break mobile layout.
+
+QA: [x] KaTeX 0.19.0 (tipe bawaan, MathJax ditolak karena berat); rumus panjang scroll dalam blok (overflow-x-auto); LaTeX rusak → pesan aman, tidak throw.
 
 ## P3.5 Image renderer
 Dependency: P3.1
@@ -377,25 +381,37 @@ Dependency: P3.1
 Acceptance:
 responsive, alt text, lazy-loading.
 
+QA: [x] responsive + lazy + alt wajib dari blok (terverifikasi visual 320px).
+
 ## P3.6 Table renderer
 Dependency: P3.1
 
 Acceptance:
 horizontal overflow handled on small screens.
 
+QA: [x] wrapper overflow-x-auto; tabel 482px scroll dalam blok 284px di 320px, dokumen tetap 320 (bukan defect — desain).
+
 ## P3.7 Chart renderer
 Dependency: P3.1
 
+QA: [x] custom SVG (bar/line/pie/scatter via chart-scale; recharts ditolak — custom cukup).
+
 ## P3.8 Function graph renderer
 Dependency: P3.1
+
+QA: [x] custom SVG via function-eval (parser ekspresi sendiri).
 
 ## P3.9 Option renderer
 Dependency: P3.3–P3.8 as needed
 
 Must support content blocks, not text only.
 
+QA: [x] OptionBlock dukung blocks + status benar/salah via props.
+
 ## P3.10 Explanation renderer
 Dependency: P3.3–P3.8
+
+QA: [x] ExplanationBlock (tampil di mode review).
 
 ## P3.11 Shared QuestionRenderer composition
 Dependency: P3.3–P3.10
@@ -403,11 +419,15 @@ Dependency: P3.3–P3.10
 Acceptance:
 usable by practice, tryout, review, CMS preview.
 
+QA: [x] SATU QuestionRenderer (props: blocks/options/explanation/mode/onSelect/selectedIndex); validasi via block-guard; build route /preview-soal prerender OK.
+
 ## P3.12 Invalid-block fallback
 Dependency: P3.11
 
 Acceptance:
 bad content fails visibly/safely without crashing entire session.
+
+QA: [x] 3 fallback terbukti di DOM (tipe video tak dikenal, math tanpa latex, opsi rusak) + pageerror NIHIL.
 
 ## P3.13 Mobile renderer QA
 Dependency: P3.11
@@ -417,6 +437,8 @@ Widths:
 - 360
 - 390
 - tablet sanity check
+
+QA: [x] 320/360/390/768: scrollWidth = viewport (nol overflow), console + page error NIHIL; screenshot dark 320 + 768 dicek manual.
 
 ---
 
