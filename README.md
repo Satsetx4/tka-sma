@@ -1,6 +1,6 @@
 # TKA SMA — Latihan & Simulasi
 
-> **Untuk coding/research agent:** mulai dari [AGENTS.md](./AGENTS.md), lalu baca [docs/CURRENT-STATE.md](./docs/CURRENT-STATE.md) dan [docs/EXECUTION-BACKLOG.md](./docs/EXECUTION-BACKLOG.md). Task pertama saat ini adalah **P0.1**. Jangan melompat fase tanpa dependency terpenuhi.
+> **Untuk coding/research agent:** mulai dari [AGENTS.md](./AGENTS.md), lalu baca [docs/CURRENT-STATE.md](./docs/CURRENT-STATE.md), [docs/HUMAN-GATES.md](./docs/HUMAN-GATES.md), dan [docs/EXECUTION-BACKLOG.md](./docs/EXECUTION-BACKLOG.md). Task pertama saat ini adalah **P0.1**. Kerjakan task dependency-ready secara autonomous dan berhenti hanya pada blocker nyata atau human gate resmi.
 
 ## Production direction
 
