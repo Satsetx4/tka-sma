@@ -121,16 +121,56 @@ Primary bank:
 
 Do not scrape/copy competitor banks.
 
+## Autonomous delivery model
+
+Most implementation work is intended to be executed autonomously by agents.
+
+The owner should not be required to approve every task. Agents continue while:
+- dependencies are satisfied,
+- acceptance criteria pass,
+- work stays inside locked scope,
+- no human gate has been reached.
+
+See `docs/HUMAN-GATES.md` for the authoritative stop/continue rules.
+
+### Human gates
+
+```
+Phase 0 complete
+   ↓
+HG1 — Foundation approval
+   ↓
+Phases 1–4 complete
+   ↓
+HG2 — Taxonomy + Question Platform + CMS approval
+   ↓
+Phases 5–9 complete
+   ↓
+HG3 — Student Learning Loop approval
+   ↓
+Phases 10–11 complete
+   ↓
+HG4 — Math Beta / Public Release approval
+   ↓
+Public release and/or Phase 12 expansion
+```
+
+Human academic review remains required for production question publication even between these gates.
+
 ## Milestones
 
 ### M0 — Foundation
 Production app shell, Next.js migration, tooling, environment validation.
 
+**Human Gate HG1 follows this milestone.**
+
 ### M1 — Taxonomy + persistence
 Math taxonomy, Neon schema, auth, roles, storage abstraction.
 
 ### M2 — Rich question platform
-ContentBlock schema, renderer, CMS, 30–50 representative Math questions.
+ContentBlock schema, renderer, CMS, and authoring workflow.
+
+**Human Gate HG2 occurs after taxonomy, persistence prerequisites, renderer, and CMS are complete (Phases 1–4).**
 
 ### M3 — Learning loop
 Practice, attempts, explanations, mastery, mistakes, adaptive recommendation.
@@ -141,8 +181,12 @@ Onboarding, diagnostic, dashboard, progress.
 ### M5 — Tryout
 Persistent tryout sessions, autosave, scoring, skill analysis.
 
+**Human Gate HG3 follows completion of the full student learning loop (through Phase 9).**
+
 ### M6 — Math beta
 200–300 reviewed Math questions, full mobile QA, production hardening.
+
+**Human Gate HG4 is required before public release.**
 
 ### M7 — Multi-subject expansion
 Bahasa Indonesia, then Bahasa Inggris, reusing the same core engines.
