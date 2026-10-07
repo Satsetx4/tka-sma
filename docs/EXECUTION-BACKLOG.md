@@ -258,28 +258,34 @@ repeatable idempotent seed.
 Dependency: P2.2
 
 Tables:
-- [ ] stimuli
-- [ ] questions
-- [ ] question_options
-- [ ] question_skills
-- [ ] media_assets
+- [x] stimuli
+- [x] questions
+- [x] question_options
+- [x] question_skills
+- [x] media_assets
+
+QA (orchestrator, 2026-10-08): [x] field persis DATABASE.md; migrasi drizzle/0000_cool_hiroim.sql generated (12 CREATE TABLE), BELUM applied (tanpa DATABASE_URL). FK antar-tabel-ada saja; subject/skill/user FK menyusul P2.3/P2.9.
 
 ## P2.6 Create learning tables
 Dependency: P2.2
 
 Tables:
-- [ ] practice_sessions
-- [ ] question_attempts
-- [ ] skill_mastery
-- [ ] mistake_queue
+- [x] practice_sessions
+- [x] question_attempts
+- [x] skill_mastery
+- [x] mistake_queue
+
+QA: [x] lihat catatan P2.5 di atas.
 
 ## P2.7 Create tryout tables
 Dependency: P2.2
 
 Tables:
-- [ ] tryout_templates
-- [ ] tryout_sessions
-- [ ] tryout_answers
+- [x] tryout_templates
+- [x] tryout_sessions
+- [x] tryout_answers
+
+QA: [x] kolom P2.7 + enum media/tryout_status asumsi V1 (DATABASE.md tak merinci) — konfirmasi sebelum apply migrasi.
 
 ## P2.8 Select/authenticate users
 Dependency: P0 complete
@@ -318,14 +324,18 @@ Dependency: P2.11
 Acceptance:
 authenticated server-side upload and delete.
 
+QA: [x] kode + 9 unit test validate lolos; BELUM TERUJI live (butuh BLOB_READ_WRITE_TOKEN owner).
+
 ## P2.13 Media validation
 Dependency: P2.12
 
 Tasks:
-- [ ] MIME allowlist
-- [ ] size limits
-- [ ] dimensions/metadata where applicable
-- [ ] alt text required at content layer
+- [x] MIME allowlist
+- [x] size limits
+- [x] dimensions/metadata where applicable
+- [x] alt text required at content layer
+
+QA: [x] kontrak di storage.ts (png/jpeg/webp/svg, 5MB, alt min 10) + validateUploadInput.
 
 Phase 2 exit:
 secure persistence, auth/roles, storage foundation ready.
