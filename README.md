@@ -1,5 +1,11 @@
 # TKA SMA — Latihan & Simulasi
 
+> **Untuk coding/research agent:** mulai dari [AGENTS.md](./AGENTS.md), lalu baca [docs/CURRENT-STATE.md](./docs/CURRENT-STATE.md) dan [docs/EXECUTION-BACKLOG.md](./docs/EXECUTION-BACKLOG.md). Task pertama saat ini adalah **P0.1**. Jangan melompat fase tanpa dependency terpenuhi.
+
+## Production direction
+
+Prototype Vite saat ini adalah referensi UX. Arsitektur production akan dimigrasikan bertahap ke Next.js sesuai [Master Plan](./docs/MASTER-PLAN.md). Snapshot prototype dipertahankan di branch `archive/vite-prototype-2026-10-07`.
+
 Cockpit ujian presisi buat latihan Tes Kemampuan Akademik SMA kelas 12. Tanpa login, nilai ke-track di HP.
 
 **Live:** https://tka-sma-sekawan.vercel.app
