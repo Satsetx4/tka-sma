@@ -3,14 +3,14 @@ import type { ReactNode } from "react";
 import { ThemeProvider } from "../components/theme/theme-provider";
 import "./globals.css";
 
-// Bahasa Indonesia mengikuti shell Vite (index.html lang="id").
+// Bahasa Indonesia (lang="id"), mengikuti prototipe sebelumnya.
 export const metadata: Metadata = {
   title: "TKA SMA — Latihan & Simulasi",
   description:
     "Latihan soal & simulasi TKA SMA — Matematika, Bahasa Indonesia, Bahasa Inggris. Timer, pembahasan, riwayat nilai. Tanpa login.",
 };
 
-// Viewport mobile mengikuti index.html Vite (lebar perangkat + notch).
+// Viewport mobile (lebar perangkat + notch).
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,

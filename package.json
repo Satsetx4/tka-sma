@@ -4,20 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:next": "next dev",
-    "build": "tsc -b && vite build",
-    "build:vite": "tsc -b && vite build",
-    "build:next": "next build",
-    "start:next": "next start",
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "next start",
     "lint": "oxlint",
     "typecheck": "tsc -b",
-    "test": "node --test tests/*.test.ts",
-    "preview": "vite preview"
+    "test": "node --test tests/*.test.ts"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.3.3",
-    "@tailwindcss/vite": "^4.3.3",
     "clsx": "^2.1.1",
     "framer-motion": "^13.4.0",
     "lucide-react": "^1.47.0",
@@ -32,9 +27,7 @@
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
-    "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
-    "typescript": "~6.0.2",
-    "vite": "^8.3.0"
+    "typescript": "~6.0.2"
   }
 }
