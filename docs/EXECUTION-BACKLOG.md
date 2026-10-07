@@ -44,10 +44,10 @@ Goal:
 Document what from the Vite prototype must be preserved.
 
 Tasks:
-- [ ] list existing screens/components/data flows
-- [ ] identify UX behaviors worth preserving
-- [ ] identify prototype-only code to retire
-- [ ] record current build/lint behavior
+- [x] list existing screens/components/data flows
+- [x] identify UX behaviors worth preserving
+- [x] identify prototype-only code to retire
+- [x] record current build/lint behavior
 
 Acceptance:
 - short migration note committed under `docs/decisions/`
