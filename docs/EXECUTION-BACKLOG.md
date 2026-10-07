@@ -10,6 +10,29 @@ Status convention:
 - [x] complete
 - [!] blocked
 
+## Autonomous execution metadata
+
+Unless explicitly overridden, every task uses:
+
+```
+AUTO_CONTINUE = yes
+HUMAN_GATE = no
+STOP_CONDITION = task acceptance criteria fail, unresolved dependency, security/content risk, or scope-changing decision
+NEXT = first uncompleted task whose dependencies are satisfied
+```
+
+Therefore an agent should **not stop after every task**. It should continue through eligible work until reaching one of the human gates below.
+
+Authoritative gate details: `docs/HUMAN-GATES.md`.
+
+Human gates:
+- **HG1:** after Phase 0.
+- **HG2:** after Phases 1–4.
+- **HG3:** after Phases 5–9.
+- **HG4:** after Phases 10–11, before public release.
+
+Academic publication approval is handled continuously through the CMS reviewer workflow and is separate from these owner gates.
+
 ---
 
 # Phase 0 — Foundation and Vite → Next.js Migration
@@ -115,6 +138,17 @@ Phase 0 exit gate:
 - Next.js replaces Vite on canonical branch
 - archived Vite prototype remains available
 - build/lint/typecheck/tests pass
+
+## HG1 — STOP: Foundation approval required
+
+```
+AUTO_CONTINUE = no
+HUMAN_GATE = yes
+STOP_CONDITION = Phase 0 exit gate passes
+NEXT_AFTER_APPROVAL = Phase 1 and dependency-eligible Phase 2 work
+```
+
+The orchestrator must report migration/build/deploy evidence and request owner approval before proceeding beyond HG1.
 
 ---
 
@@ -411,6 +445,17 @@ Dependency: P4.13, P4.14, P4.17
 Acceptance:
 incomplete question cannot publish.
 
+## HG2 — STOP: Taxonomy + Question Platform + CMS approval required
+
+```
+AUTO_CONTINUE = no
+HUMAN_GATE = yes
+STOP_CONDITION = Phases 1–4 are complete and their acceptance criteria pass
+NEXT_AFTER_APPROVAL = Phase 5, then Phase 6+
+```
+
+Owner reviews taxonomy structure, rich question UX, CMS authoring flow, and content workflow. Math taxonomy/content must also have human academic review before being treated as final.
+
 ---
 
 # Phase 5 — Initial Math Content
@@ -611,6 +656,17 @@ Dependency: P7.1, P9.9
 
 Document/test how tryout evidence contributes.
 
+## HG3 — STOP: Student learning-loop approval required
+
+```
+AUTO_CONTINUE = no
+HUMAN_GATE = yes
+STOP_CONDITION = Phases 5–9 complete and end-to-end learning loop passes
+NEXT_AFTER_APPROVAL = Phase 10 and Phase 11
+```
+
+The owner should be able to test the complete flow from onboarding/diagnostic through adaptive practice and tryout analysis before approval.
+
 ---
 
 # Phase 10 — Production Hardening
@@ -655,10 +711,30 @@ Exit gate:
 - taxonomy coverage acceptable
 - diagnostic/practice/mastery/mistake/adaptive/tryout all stable
 - mobile UX passes QA
+- production-hardening checks from Phase 10 have no unresolved release blocker
+
+## HG4 — STOP: Math Beta / public release approval required
+
+```
+AUTO_CONTINUE = no
+HUMAN_GATE = yes
+STOP_CONDITION = Phase 10–11 release criteria pass
+NEXT_AFTER_APPROVAL = public release and/or Phase 12 subject expansion
+```
+
+No agent may declare public release or bypass this gate.
 
 ---
 
 # Phase 12 — Bahasa Indonesia, then Bahasa Inggris
+
+Phase entry requires HG4 approval.
+
+```
+AUTO_CONTINUE = yes
+HUMAN_GATE = no by default
+STOP_CONDITION = a new locked product decision or content/release gate is required
+```
 
 For each subject:
 1. official taxonomy research
