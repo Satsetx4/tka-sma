@@ -75,4 +75,4 @@ It must be preserved conceptually where useful, but the production foundation wi
 
 ## Current next task
 
-Phase 0 COMPLETE (P0.1–P0.7, QA pass all). Live: tka-sma-umber.vercel.app 200 (Next.js, Vite retired). STOP at **HG1** — menunggu owner approval sebelum Phase 1–2. Lihat laporan HG1 di chat 2026-10-07.
+**HG1 APPROVED 2026-10-08.** In progress on branch `feat/p1-p2-kickoff`: P1.1–P1.5 (Math taxonomy draft), P2.1–P2.2 (Neon + Drizzle), P2.8/P2.11/P3.1–P3.2 (auth decision, storage interface, ContentBlock+Zod). P1.6 freeze menunggu review akademik manusia.
