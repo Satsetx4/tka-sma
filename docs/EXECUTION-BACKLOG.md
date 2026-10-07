@@ -365,11 +365,15 @@ QA: [x] Zod v4 schemas + validator publish-gate + 15 test (valid + malformed dit
 ## P3.3 Text renderer
 Dependency: P3.1
 
+QA: [x] TextBlock + halaman demo /preview-soal.
+
 ## P3.4 Math/LaTeX renderer
 Dependency: P3.1
 
 Acceptance:
 long formulas do not break mobile layout.
+
+QA: [x] KaTeX 0.19.0 (tipe bawaan, MathJax ditolak karena berat); rumus panjang scroll dalam blok (overflow-x-auto); LaTeX rusak → pesan aman, tidak throw.
 
 ## P3.5 Image renderer
 Dependency: P3.1
@@ -377,25 +381,37 @@ Dependency: P3.1
 Acceptance:
 responsive, alt text, lazy-loading.
 
+QA: [x] responsive + lazy + alt wajib dari blok (terverifikasi visual 320px).
+
 ## P3.6 Table renderer
 Dependency: P3.1
 
 Acceptance:
 horizontal overflow handled on small screens.
 
+QA: [x] wrapper overflow-x-auto; tabel 482px scroll dalam blok 284px di 320px, dokumen tetap 320 (bukan defect — desain).
+
 ## P3.7 Chart renderer
 Dependency: P3.1
 
+QA: [x] custom SVG (bar/line/pie/scatter via chart-scale; recharts ditolak — custom cukup).
+
 ## P3.8 Function graph renderer
 Dependency: P3.1
+
+QA: [x] custom SVG via function-eval (parser ekspresi sendiri).
 
 ## P3.9 Option renderer
 Dependency: P3.3–P3.8 as needed
 
 Must support content blocks, not text only.
 
+QA: [x] OptionBlock dukung blocks + status benar/salah via props.
+
 ## P3.10 Explanation renderer
 Dependency: P3.3–P3.8
+
+QA: [x] ExplanationBlock (tampil di mode review).
 
 ## P3.11 Shared QuestionRenderer composition
 Dependency: P3.3–P3.10
@@ -403,11 +419,15 @@ Dependency: P3.3–P3.10
 Acceptance:
 usable by practice, tryout, review, CMS preview.
 
+QA: [x] SATU QuestionRenderer (props: blocks/options/explanation/mode/onSelect/selectedIndex); validasi via block-guard; build route /preview-soal prerender OK.
+
 ## P3.12 Invalid-block fallback
 Dependency: P3.11
 
 Acceptance:
 bad content fails visibly/safely without crashing entire session.
+
+QA: [x] 3 fallback terbukti di DOM (tipe video tak dikenal, math tanpa latex, opsi rusak) + pageerror NIHIL.
 
 ## P3.13 Mobile renderer QA
 Dependency: P3.11
@@ -418,30 +438,46 @@ Widths:
 - 390
 - tablet sanity check
 
+QA: [x] 320/360/390/768: scrollWidth = viewport (nol overflow), console + page error NIHIL; screenshot dark 320 + 768 dicek manual.
+
 ---
 
 # Phase 4 — CMS V1
 
+QA BATCH (orchestrator, 2026-10-08): P4.1–P4.18 SELESAI + LULUS QA (40/40 test, build hijau 8 route CMS, API tanpa guard → 503 eksplisit BUKAN fail-open — diverifikasi live). Guard auth (`@/server/auth/guard`) BELUM mendarat (agen auth gagal tanpa summary; deps better-auth 1.7.7 sudah terinstall) — CMS terkunci aman sampai redelegasi auth selesai.
+
 ## P4.1 Admin route shell
 Dependency: P2.10
+
+QA: [x] /admin layout + dashboard + /baru + /[id]; tanpa guard → halaman penjelasan (bukan fail-open).
 
 ## P4.2 Admin authorization guard
 Dependency: P4.1
 
+QA: [x] guard-adapter (dynamic import tak-teranalisis-bundler) + _auth.ts (401/403/503) — kontrak PATH @/server/auth/guard menunggu agen auth.
+
 ## P4.3 Question list
 Dependency: P2.5
+
+QA: [x] + P4.4 filter/search (status/subject/topic/difficulty/tipe/teks).
 
 ## P4.4 Question filters/search
 Dependency: P4.3
 
+QA: [x] lihat P4.3.
+
 ## P4.5 Question metadata editor
 Dependency: P4.3
+
+QA: [x] MetadataEditor (taxonomy/type/difficulty/time/source).
 
 Fields:
 taxonomy, type, difficulty, estimated time, source.
 
 ## P4.6 Text block editor
 Dependency: P3.1
+
+QA: [x] + P4.7–P4.14 semua editor blok (text/math/image-upload/table/chart/graph/options+correct-answer/explanation) di src/features/cms/.
 
 ## P4.7 Math block editor
 Dependency: P3.4
@@ -472,8 +508,12 @@ Dependency: P3.11
 
 Must use same renderer as student app.
 
+QA: [x] preview pakai QuestionRenderer yang SAMA (tanpa renderer kedua).
+
 ## P4.16 Workflow states
 Dependency: P4.5
+
+QA: [x] 5 status + tombol transisi legal/ilegal (test).
 
 - draft
 - in_review
@@ -484,11 +524,15 @@ Dependency: P4.5
 ## P4.17 Reviewer approval rules
 Dependency: P4.16, P2.10
 
+QA: [x] hanya reviewer/admin boleh approve+publish; editor 403; penulis tak boleh approve sendiri (kecuali admin darurat tercatat).
+
 ## P4.18 Publish quality gate
 Dependency: P4.13, P4.14, P4.17
 
 Acceptance:
 incomplete question cannot publish.
+
+QA: [x] gagal → 422 + missing[]; validasi akademik manusia tetap di luar sistem.
 
 ## HG2 — STOP: Taxonomy + Question Platform + CMS approval required
 

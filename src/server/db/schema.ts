@@ -1,6 +1,8 @@
 // P2.5 + P2.6 + P2.7 — Tabel question/content, learning, dan tryout. Placeholder
 // registry dipertahankan di bawah: P2.3 (subjects/topics/subtopics/skills)
 // DITAHAN menunggu P1.6 freeze — JANGAN daftarkan tabel taksonomi sebelum itu.
+// P2.9/P2.10 — Blok auth (users/sessions/accounts/verifications/user_profiles)
+// mengikuti docs/decisions/P2-auth-decision.md (Better Auth, sesi DB-backed).
 import {
   boolean,
   index,
