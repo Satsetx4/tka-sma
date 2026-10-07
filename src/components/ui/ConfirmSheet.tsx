@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, CheckCircle2, X } from "lucide-react";
 import { TapButton } from "./TapButton";
