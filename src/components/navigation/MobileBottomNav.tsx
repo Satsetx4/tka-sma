@@ -1,3 +1,6 @@
+"use client";
+
+// Navigasi bawah mobile — batas client untuk App Router (pakai framer-motion).
 import React from "react";
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";

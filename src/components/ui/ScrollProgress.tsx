@@ -1,3 +1,6 @@
+"use client";
+
+// Bar progres scroll — batas client untuk App Router (pakai framer-motion).
 import React from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 

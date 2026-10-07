@@ -1,3 +1,6 @@
+"use client";
+
+// Tombol 5 varian + loading — batas client untuk App Router (pakai framer-motion).
 import React from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
 import { Loader2 } from "lucide-react";

@@ -1,3 +1,6 @@
+"use client";
+
+// Kartu hidup 4 varian — batas client untuk App Router (pakai framer-motion).
 import React from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
 import { cn } from "../../lib/utils";

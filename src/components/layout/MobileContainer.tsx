@@ -7,6 +7,7 @@ interface Props {
   hasBottomNav?: boolean;
 }
 
+/** Cangkang mobile max-w-md + padding bawah untuk bottom nav. Dipakai bersama Vite & Next. */
 export const MobileContainer: React.FC<Props> = ({ children, className, hasBottomNav = true }) => (
   <div className="min-h-screen bg-slate-200 text-slate-900 flex justify-center selection:bg-emerald-500/30 dark:bg-slate-950 dark:text-slate-100">
     <div className={cn("w-full max-w-md min-h-screen flex flex-col relative border-x shadow-2xl",
