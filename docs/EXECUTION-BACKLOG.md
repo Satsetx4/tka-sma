@@ -162,6 +162,8 @@ NEXT_AFTER_APPROVAL = Phase 1 and dependency-eligible Phase 2 work
 
 The orchestrator must report migration/build/deploy evidence and request owner approval before proceeding beyond HG1.
 
+**HG1 APPROVED by owner 2026-10-08 (chat: "ACC").** Proceeding to Phase 1 and dependency-eligible Phase 2 work on branch `feat/p1-p2-kickoff`.
+
 ---
 
 # Phase 1 — Official Math Taxonomy
@@ -170,12 +172,14 @@ The orchestrator must report migration/build/deploy evidence and request owner a
 Dependency: P0 complete
 
 Tasks:
-- [ ] record official URLs/docs and publication/update dates
-- [ ] identify tested competency structure
-- [ ] note official question forms
+- [x] record official URLs/docs and publication/update dates
+- [x] identify tested competency structure
+- [x] note official question forms
 
 Acceptance:
 references documented with provenance.
+
+QA (orchestrator, 2026-10-08): R1 Perkaban BSKAP 045/H/AN/2025 (14 Jul 2025, dibaca via salinan bintangpelajar — WAJIB verifikasi ke pusmendik sebelum freeze) + R2 matriks Pusmendik + R2 sekunder. 5 elemen, 3 level kognitif L1-L3, 3 bentuk soal objektif. Nol soal disalin.
 
 ## P1.2 Draft Math topics
 Dependency: P1.1
@@ -183,11 +187,17 @@ Dependency: P1.1
 Acceptance:
 topic list maps to official framework.
 
+QA: [x] 5 topics 1:1 elemen resmi (MATH.BIL/ALG/GEO/TRG/DAT), status draft.
+
 ## P1.3 Draft Math subtopics
 Dependency: P1.2
 
+QA: [x] 10 subtopics 1:1 sub-elemen resmi + batasan R1 dicatat.
+
 ## P1.4 Draft Math skills
 Dependency: P1.3
+
+QA: [x] 32 skills (code stabil + name + description + competency + parent + rentang L1-L3).
 
 Each skill needs:
 - stable code
@@ -201,6 +211,8 @@ Dependency: P1.4
 
 Acceptance:
 no obvious duplicate skills; coverage traceable to framework.
+
+QA: [x] tabel traceability 10/10 penuh + 9 keputusan deduplikasi. P1.6 freeze DITAHAN — butuh review akademik manusia (§7 file taksonomi).
 
 ## P1.6 Freeze taxonomy v1
 Dependency: P1.5
@@ -218,11 +230,14 @@ Dependency: P0 complete
 Acceptance:
 server-only connection verified.
 
+QA (orchestrator, 2026-10-08): [x] client server-only berlapis (server-only + window guard) + checkConnection (SELECT 1). Status: BELUM TERUJI live — blocker kredensial (CLI logout, tak ada .env.local; nol secret di repo). Cara uji: tempel DATABASE_URL ke .env.local lalu panggil checkConnection.
 ## P2.2 Configure Drizzle
 Dependency: P2.1
 
 Acceptance:
 migration generate/apply workflow documented.
+
+QA: [x] drizzle-orm 0.45.3 + serverless 1.2.0 + kit 0.31.11; drizzle.config.ts; scripts db:generate/migrate/studio; schema SENGAJA KOSONG (tabel di P2.3+).
 
 ## P2.3 Create taxonomy tables
 Dependency: P2.2, P1.6
@@ -275,6 +290,8 @@ choose the simplest robust server-compatible auth approach.
 Acceptance:
 decision documented before implementation.
 
+QA: [x] KEPUTUSAN: Better Auth + sesi DB di Neon via adapter Drizzle (docs/decisions/P2-auth-decision.md). Auth.js v5/kustom/SaaS ditolak beralasan. Implementasi di P2.9/P2.10.
+
 ## P2.9 Implement authentication
 Dependency: P2.8
 
@@ -292,6 +309,8 @@ Roles:
 
 ## P2.11 Implement StorageService interface
 Dependency: P0 complete
+
+QA: [x] interface upload/delete/getUrl/validate + kontrak (MIME allowlist, 5MB, alt-text min 10) di src/server/storage/ — tanpa SDK Blob (implementasi di P2.12).
 
 ## P2.12 Implement VercelBlobStorage
 Dependency: P2.11
@@ -318,6 +337,8 @@ secure persistence, auth/roles, storage foundation ready.
 ## P3.1 Define ContentBlock TypeScript model
 Dependency: P0 complete
 
+QA: [x] 6 tipe (text/math/image/table/chart/function_graph) + opsi + explanation di src/domain/question/ (domain murni, tanpa I/O).
+
 Types:
 - text
 - math
@@ -328,6 +349,8 @@ Types:
 
 ## P3.2 Add Zod validation for blocks
 Dependency: P3.1
+
+QA: [x] Zod v4 schemas + validator publish-gate + 15 test (valid + malformed ditolak), 16/16 pass.
 
 ## P3.3 Text renderer
 Dependency: P3.1
