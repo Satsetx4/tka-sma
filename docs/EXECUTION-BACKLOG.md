@@ -77,28 +77,32 @@ QA (orchestrator, 2026-10-07): dev HTTP 200, build:next exit 0, build:vite exit 
 Dependency: P0.2
 
 Tasks:
-- [ ] global styles
-- [ ] light/dark theme behavior
-- [ ] mobile width/layout primitives
-- [ ] typography
-- [ ] basic icons
+- [x] global styles
+- [x] light/dark theme behavior
+- [x] mobile width/layout primitives
+- [x] typography
+- [x] basic icons
 
 Acceptance:
 - visual foundation matches or improves prototype
 - 320px mobile width usable
 
+QA (orchestrator, 2026-10-07): token Vite diport 1:1 (font display, dark variant, scrollbar, reduced-motion); anti-FOUC default dark key tka-sma:theme:v1; 167 selektor .dark di bundle; light mode verified via screenshot (teks terbaca, nol defect). Fix QA: theme-provider lazy initializer (warning set-state-in-effect hilang).
+
 ## P0.4 Port prototype home shell
 Dependency: P0.3
 
 Tasks:
-- [ ] home page shell
-- [ ] navigation structure
-- [ ] retain only useful UX patterns
-- [ ] no static learning logic hardcoded into final architecture
+- [x] home page shell
+- [x] navigation structure
+- [x] retain only useful UX patterns
+- [x] no static learning logic hardcoded into final architecture
 
 Acceptance:
 - home renders in Next.js
 - responsive on mobile
+
+QA (orchestrator, 2026-10-07): parity penuh (hero + nama + 2 kartu mode + strip mapel + statistik + bedah + grade); 320px + 390px tanpa overflow, console NIHIL; screenshot dark + light dicek manual; page TIDAK impor QUESTIONS/kunci; tombol ujian disabled "Segera hadir" (Fase 6). UTANG TERCATAT: page masih impor store/scoreOf/gradeOf/SUBJECTS dari Vite (tampilan saja) — wajib dilepas di P1-P2.
 
 ## P0.5 Establish project folders
 Dependency: P0.2

@@ -75,4 +75,4 @@ It must be preserved conceptually where useful, but the production foundation wi
 
 ## Current next task
 
-P0.1 is complete (migration note FINAL at `docs/decisions/P0.1-migration-inventory.md`, verified by orchestrator: build exit 0, lint exit 0 + 1 non-blocking warning, no production code changed). Start with **P0.2** in `docs/EXECUTION-BACKLOG.md`.
+P0.1–P0.6 complete (P0.3/P0.4 merged as #3, QA pass: dark/light screenshots verified, 320px no overflow). Next: **P0.7** Vercel verification (preview deploy, production config, no secret exposed) — then HG1 foundation approval.
