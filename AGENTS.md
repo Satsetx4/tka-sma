@@ -53,12 +53,42 @@ Examples:
 
 Avoid mega-PRs such as `build-entire-app`.
 
+## Autonomous execution and human gates
+
+Default behavior is **continue autonomously**.
+
+Read `docs/HUMAN-GATES.md` before starting work.
+
+Unless a task explicitly overrides these values:
+
+```
+AUTO_CONTINUE = yes
+HUMAN_GATE = no
+STOP_CONDITION = acceptance failure, unresolved dependency, risk requiring human judgment, or a defined human gate
+NEXT = first uncompleted task whose dependencies are satisfied
+```
+
+Do not ask the owner for confirmation after routine small tasks. Continue until a defined human gate or a genuine blocker is reached.
+
+The four mandatory owner gates are:
+
+1. **HG1** — after Phase 0: foundation/migration approval.
+2. **HG2** — after Phases 1–4: Math taxonomy + question platform + CMS approval.
+3. **HG3** — after Phases 5–9: complete student learning-loop approval.
+4. **HG4** — after Phases 10–11: Math Beta/public-release approval.
+
+At a gate, stop further gated work, summarize evidence, and request the specific approval. Do not bypass a gate.
+
+Academic question publication still requires human reviewer approval as defined in `docs/CONTENT-POLICY.md`.
+
 ## Work discipline
 
 Before coding:
 - Identify the exact task ID from `docs/EXECUTION-BACKLOG.md`.
 - Confirm dependencies are complete.
 - Do not silently expand scope.
+- Check whether the current task/phase is approaching a human gate.
+- When no gate/blocker exists, continue to the next eligible task without asking permission.
 
 Every completed task must include:
 - implementation,
