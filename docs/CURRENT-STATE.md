@@ -75,6 +75,6 @@ It must be preserved conceptually where useful, but the production foundation wi
 
 ## Current next task
 
-**HG1 APPROVED 2026-10-08.** Merged ke master: PR#5 (P1.1–P1.5 taksonomi DRAFT + P2.1–P2.2 + P2.8/P2.11/P3.1–P3.2), PR#6 (P2.5–P2.7 schema + P2.12–P2.13 Blob), PR#7 (P3.3–P3.13 renderer), PR#8 (P4.1–P4.18 CMS V1), PR#9 (P2.9–P2.10 auth). Live tka-sma-umber.vercel.app 200 (Home + login + API 401 fail-closed).
+**HG1 APPROVED 2026-10-08.** Merged ke master: PR#5 (P1.1–P1.5 taksonomi DRAFT + P2.1–P2.2 + P2.8/P2.11/P3.1–P3.2), PR#6 (P2.5–P2.7 schema + P2.12–P2.13 Blob), PR#7 (P3.3–P3.13 renderer), PR#8 (P4.1–P4.18 CMS V1), PR#9 (P2.9–P2.10 auth), PR#10 (P1.6 FROZEN v1 + P2.3–P2.4 taxonomy tables + seed 1/5/10/32). Live tka-sma-umber.vercel.app 200 (deploy success).
 
-**STOP — 2 kebutuhan manusia sebelum HG2:** (1) review akademik P1.6 (verifikasi R1 ke pusmendik + 8 poin §7 taksonomi; lalu P2.3 tabel taksonomi + P2.4 seed); (2) kredensial uji-live: DATABASE_URL + BETTER_AUTH_SECRET/URL + BLOB_READ_WRITE_TOKEN (tempel ke .env.local lokal, jangan commit).
+**STOP — 1 kebutuhan manusia tersisa:** kredensial uji-live: DATABASE_URL + BETTER_AUTH_SECRET/URL + BLOB_READ_WRITE_TOKEN (tempel ke .env.local lokal, jangan commit). Setelah ada: db:migrate + seed taksonomi + seed admin + uji login/CMS beneran → HG2.
