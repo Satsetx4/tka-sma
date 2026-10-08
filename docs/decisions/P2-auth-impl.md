@@ -1,7 +1,8 @@
 # Implementasi Auth — P2.9/P2.10
 
-Tanggal: 2026-10-08 · Status: diimplementasi, **BELUM-live** (tanpa DATABASE_URL
-di CLI ini — uji-live menunggu kredensial; lihat "Cara uji-live" di bawah).
+Tanggal: 2026-10-08 · Status: diimplementasi, **TERUJI-live 2026-10-09**
+(migrasi auth applied ke Neon, seed admin live, login/CMS live lolos —
+lihat bukti di bawah; status lama BELUM-live resmi dicabut).
 
 Keputusan induk: `docs/decisions/P2-auth-decision.md` (Opsi B — Better Auth +
 sesi DB-backed Neon via adapter Drizzle). Versi terkunci: `better-auth@1.7.7`,
@@ -39,12 +40,26 @@ layout/route server). Cookie httpOnly+secure ikut bawaan Better Auth
   `GET /admin` tanpa cookie → **redirect 307 ke /login?next=/admin**
   (bukan lagi halaman penjelasan "guard belum tersedia")
 
-## Status: BELUM-live
+## Status: TERUJI-live 2026-10-09
 
-Yang sudah TERBUKTI tanpa DB: kontrak guard, peran allow/deny, error 401/403,
-seed-validasi, migrasi tergenerate, seluruh gerbang hijau, CMS tak lagi 503.
-Yang BELUM: login sungguhan, refresh sesi, cookie round-trip, `db:migrate`,
-seed sungguhan — semuanya butuh DATABASE_URL asli.
+Uji-live selesai via CLI + curl ke https://tka-sma-umber.vercel.app
+(setelah deploy ulang production READY agar env baru kebaca):
+
+- Seed: `ADMIN_EMAIL=testka@admin.com ADMIN_PASSWORD=min-8 (disimpan aman,
+  tidak ditulis di docs) node --conditions=react-server scripts/seed-admin.ts`
+  → admin dibuat role=admin; verifikasi DB: users=1 (email_verified, role
+  admin), user_profiles=1, accounts credential=1. **Segera ganti password
+  awal setelah login pertama.**
+- Login: `POST /api/auth/sign-in/email` → **200** (user role admin);
+  cookie `tka-sma.session_*` terpasang; baris `sessions` di Neon bertambah
+  (DB-backed terbukti, bukan cookie statis).
+- CMS dengan sesi: `GET /api/cms/questions` → **200 `{questions:[]}`**;
+  `GET /admin` → **200**.
+- Tanpa sesi (guard fail-closed): API → 401 pesan login; `/admin` → 307
+  ke `/login?next=/admin`.
+- Env Vercel: `BETTER_AUTH_SECRET` (sensitive, 3 env) +
+  `BETTER_AUTH_URL=https://companion-pending.vercel.app` (production) +
+  `BETTER_AUTH_TRUSTED_ORIGINS` (production,preview) ditambah via CLI.
 
 ## Cara uji-live (butuh DATABASE_URL + secret)
 
