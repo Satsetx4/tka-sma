@@ -48,9 +48,10 @@ async function idDariKode(
   tabel: "subjects" | "topics" | "subtopics",
   code: string,
 ): Promise<string> {
-  const baris = (await db.execute(
+  const hasil = (await db.execute(
     sql`SELECT "id" FROM ${sql.identifier(tabel)} WHERE "code"=${code} LIMIT 1`,
-  )) as unknown as Array<{ id: string }>;
+  )) as unknown as Array<{ id: string }> | { rows?: Array<{ id: string }> };
+  const baris = Array.isArray(hasil) ? hasil : (hasil.rows ?? []);
   const id = baris[0]?.id;
   if (!id) throw new Error(`[seed-taxonomy] parent ${tabel}.${code} tidak ditemukan.`);
   return id;
