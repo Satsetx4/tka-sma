@@ -1,6 +1,6 @@
-// P2.5 + P2.6 + P2.7 — Tabel question/content, learning, dan tryout. Placeholder
-// registry dipertahankan di bawah: P2.3 (subjects/topics/subtopics/skills)
-// DITAHAN menunggu P1.6 freeze — JANGAN daftarkan tabel taksonomi sebelum itu.
+// P2.3 — Tabel taksonomi (subjects/topics/subtopics/skills), isi FROZEN v1
+// (docs/TKA-MATH-TAXONOMY.md — JANGAN ubah file itu).
+// P2.5 + P2.6 + P2.7 — Tabel question/content, learning, dan tryout.
 // P2.9/P2.10 — Blok auth (users/sessions/accounts/verifications/user_profiles
 // + user_role) — tabel implementasi di bawah, mengikuti
 // docs/decisions/P2-auth-decision.md (Better Auth, sesi DB-backed).
@@ -490,11 +490,101 @@ export const userProfiles = pgTable("user_profiles", {
 });
 
 // ---------------------------------------------------------------------------
+// P2.3 — Tabel taksonomi (subjects → topics → subtopics → skills).
+// Sumber isi: docs/TKA-MATH-TAXONOMY.md v1 (FROZEN). Field persis
+// docs/DATABASE.md. Status memakai enum sendiri (`taxonomy_status`:
+// draft → active → archived) karena tidak ada enum konten yang memuat
+// pasangan draft+active sekaligus (subject MATH = active, sisanya draft).
+// FK internal rantai induk-anak; CASCADE: hapus subject = hapus subtree.
+// FK balik dari tabel P2.5/P2.6 (questions.subject_id,
+// question_skills.skill_id, skill_mastery.skill_id,
+// practice_sessions.subject_id) SENGAJA belum dipasang — kolom-kolom itu
+// lahir tanpa FK ("menyusul P2.3"); pemasangannya butuh migrasi lanjutan +
+// penyesuaian repository, di luar cakupan P2.3.
+// ---------------------------------------------------------------------------
+
+/** Lifecycle taksonomi V1: draft → active → archived. */
+export const taxonomyStatusEnum = pgEnum("taxonomy_status", ["draft", "active", "archived"]);
+
+/** Mapel. Multi-subject; Matematika = slice vertikal pertama. */
+export const subjects = pgTable("subjects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: text("code").notNull().unique(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  status: taxonomyStatusEnum("status").notNull().default("draft"),
+  sortOrder: integer("sort_order").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+/** Elemen muatan resmi (5 untuk Matematika, pemetaan 1:1 ke R1). */
+export const topics = pgTable(
+  "topics",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    subjectId: uuid("subject_id")
+      .notNull()
+      .references(() => subjects.id, { onDelete: "cascade" }),
+    code: text("code").notNull().unique(),
+    name: text("name").notNull(),
+    description: text("description"),
+    sortOrder: integer("sort_order").notNull(),
+    status: taxonomyStatusEnum("status").notNull().default("draft"),
+  },
+  (t) => [index("topics_subject_id_idx").on(t.subjectId)],
+);
+
+/** Sub-elemen matriks resmi (10 untuk Matematika, pemetaan 1:1 ke R1). */
+export const subtopics = pgTable(
+  "subtopics",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    topicId: uuid("topic_id")
+      .notNull()
+      .references(() => topics.id, { onDelete: "cascade" }),
+    code: text("code").notNull().unique(),
+    name: text("name").notNull(),
+    description: text("description"),
+    sortOrder: integer("sort_order").notNull(),
+    status: taxonomyStatusEnum("status").notNull().default("draft"),
+  },
+  (t) => [index("subtopics_topic_id_idx").on(t.topicId)],
+);
+
+/** Unit mastery (32 untuk Matematika). `competency` memuat redaksi resmi R1 + rentang level [Lx–Ly]. */
+export const skills = pgTable(
+  "skills",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    subtopicId: uuid("subtopic_id")
+      .notNull()
+      .references(() => subtopics.id, { onDelete: "cascade" }),
+    code: text("code").notNull().unique(),
+    name: text("name").notNull(),
+    description: text("description"),
+    competency: text("competency").notNull(),
+    sortOrder: integer("sort_order").notNull(),
+    status: taxonomyStatusEnum("status").notNull().default("draft"),
+  },
+  (t) => [index("skills_subtopic_id_idx").on(t.subtopicId)],
+);
+
+// ---------------------------------------------------------------------------
 // Registry — satu-satunya jalan masuk skema (dipakai drizzle.config + barrel).
-// P2.3 (subjects/topics/subtopics/skills) DITAHAN menunggu P1.6 freeze —
-// JANGAN daftarkan tabel taksonomi di sini sebelum P2.3 dikerjakan.
+// P2.3 SELESAI (P1.6 freeze lolos — TKA-MATH-TAXONOMY.md v1 FROZEN):
+// taxonomyStatusEnum + subjects/topics/subtopics/skills terdaftar di sini.
 // ---------------------------------------------------------------------------
 export const schema = {
+  taxonomyStatusEnum,
+  subjects,
+  topics,
+  subtopics,
+  skills,
   difficultyEnum,
   questionTypeEnum,
   sourceTypeEnum,

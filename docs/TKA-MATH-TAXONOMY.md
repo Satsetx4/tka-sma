@@ -1,7 +1,8 @@
-# Taksonomi TKA Matematika SMA — DRAFT
+# Taksonomi TKA Matematika SMA — v1 (FROZEN)
 
-> **Status: DRAFT** — Belum beku. Berlaku untuk Fase 1 (P1.1–P1.5).
-> P1.6 (freeze v1) adalah wewenang orchestrator + manusia.
+> **Status: FROZEN v1** — Dibekukan 2026-10-08 atas persetujuan akademik owner (chat: "PASS").
+> Berlaku sebagai implementation source untuk P2.3/P2.4 dan seterusnya.
+> Perubahan setelah ini wajib lewat revisi taksonomi (bukan edit diam-diam).
 > Tanggal penyusunan: 2026-10-08.
 > Cakupan: TKA Matematika **wajib** jenjang SMA/MA/sederajat dan SMK/MAK.
 > Matematika Tingkat Lanjut (mata uji pilihan) **di luar cakupan** file ini.

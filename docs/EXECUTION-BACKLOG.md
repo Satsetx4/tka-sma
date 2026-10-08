@@ -220,6 +220,8 @@ Dependency: P1.5
 Acceptance:
 `docs/TKA-MATH-TAXONOMY.md` becomes implementation source.
 
+QA (orchestrator, 2026-10-08): [x] FROZEN v1 atas PASS akademik owner (chat). Isi TIDAK diubah selain header status (diff diverifikasi: hanya 6 baris header).
+
 ---
 
 # Phase 2 — Persistence, Auth, Roles, Storage
@@ -243,16 +245,20 @@ QA: [x] drizzle-orm 0.45.3 + serverless 1.2.0 + kit 0.31.11; drizzle.config.ts; 
 Dependency: P2.2, P1.6
 
 Tables:
-- [ ] subjects
-- [ ] topics
-- [ ] subtopics
-- [ ] skills
+- [x] subjects
+- [x] topics
+- [x] subtopics
+- [x] skills
+
+QA (orchestrator, 2026-10-08): [x] + enum taxonomy_status + FK cascade + registry; migrasi drizzle/0002_taxonomy.sql generated (4 CREATE TABLE). FK balik P2.5/P2.6 sengaja pending (terdokumentasi).
 
 ## P2.4 Seed Math taxonomy
 Dependency: P2.3
 
 Acceptance:
 repeatable idempotent seed.
+
+QA: [x] 1/5/10/32 persis FROZEN (verifikasi regex independen: 32/32 skills, 10/10 subtopics, 5/5 topics MATCH). Upsert-by-code idempoten. BELUM dijalankan live (butuh DATABASE_URL); cara: export .env.local → db:migrate → node scripts/seed-taxonomy.ts → COUNT 1/5/10/32.
 
 ## P2.5 Create question/content tables
 Dependency: P2.2
