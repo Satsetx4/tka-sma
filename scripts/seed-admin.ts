@@ -9,12 +9,14 @@
 // (lihat docs/decisions/P2-auth-impl.md). Idempoten: bila email sudah
 // terdaftar, peran dipastikan admin lalu keluar tanpa membuat duplikat.
 //
-// Jalankan:  ADMIN_EMAIL=... ADMIN_PASSWORD=... npx tsx scripts/seed-admin.ts
-// (atau: node --experimental-strip-types scripts/seed-admin.ts)
+// Jalankan:  ADMIN_EMAIL=... ADMIN_PASSWORD=... node --conditions=react-server scripts/seed-admin.ts
+// (atau: npx tsx scripts/seed-admin.ts)
+// Flag --conditions=react-server WAJIB bila pakai node langsung: modul auth/db
+// memakai `server-only` (kosong di kondisi react-server, throw tanpa kondisi itu).
 import "server-only";
-import { getAuth } from "../src/server/auth/auth.ts";
+import { hashPassword } from "@better-auth/utils/password";
 import { getDb } from "../src/server/db/client.ts";
-import { users } from "../src/server/db/schema.ts";
+import { accounts, userProfiles, users } from "../src/server/db/schema.ts";
 import { eq } from "drizzle-orm";
 
 function wajibEnv(nama: string): string {
@@ -49,14 +51,21 @@ if (sudahAda.length > 0) {
   process.exit(0);
 }
 
-const hasil = await getAuth().api.signUpEmail({
-  body: { email, password, name: nama },
-});
-const userId = (hasil as unknown as { user?: { id?: string } }).user?.id;
-if (!userId) {
-  console.error("[seed-admin] signUpEmail tidak mengembalikan user id. Batal.");
-  process.exit(1);
+function uid(prefix: string): string {
+  const acak = Array.from(crypto.getRandomValues(new Uint8Array(12)))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return `${prefix}_${acak}`;
 }
-await db.update(users).set({ role: "admin" }).where(eq(users.id, userId));
+
+const userId = uid("user");
+// Hash via fungsi bawaan Better Auth (@better-auth/utils/password:
+// scrypt N=16384/r=16/p=1, format "salt:hash") agar login /api/auth
+// sign-in/email bisa verifikasi. signUpEmail API tidak dipakai karena
+// disableSignUp=true (pendaftaran publik dimatikan di V1).
+const passwordSimpan = await hashPassword(password);
+await db.insert(users).values({ id: userId, name: nama, email, emailVerified: true, role: "admin" });
+await db.insert(accounts).values({ id: uid("acc"), userId, accountId: userId, providerId: "credential", password: passwordSimpan });
+await db.insert(userProfiles).values({ userId, displayName: nama });
 console.log(`[seed-admin] admin dibuat: ${email} (role=admin). Segera ganti kata sandi.`);
 process.exit(0);
