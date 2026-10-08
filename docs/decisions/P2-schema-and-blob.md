@@ -49,17 +49,15 @@ is_flagged, is_correct nullable = belum dinilai, answered_at).
   (user_id,status), (question_id,position) unique, (session_id,question_id)
   unique, code/pathname unique).
 
-## 3. Status migrasi: GENERATED, BELUM APPLIED
+## 3. Status migrasi: APPLIED-live 2026-10-09
 
 - File: `drizzle/0000_*.sql` (+ `drizzle/meta/`) dari `npm run db:generate`
   (offline, exit 0 — 12 tabel terbaca drizzle-kit).
-- `npm run db:migrate` SENGAJA TIDAK dijalankan: butuh DATABASE_URL asli
-  (blocker sama seperti P2-neon-drizzle: CLI Vercel logout, tanpa `.env.local`).
-- Cara apply (owner): isi `.env.local` dengan DATABASE_URL asli, export ke
-  shell, lalu `npm run db:migrate`. JANGAN tandai TERUJI tanpa apply nyata +
-  inspeksi tabel di Neon.
+- `npm run db:migrate` SUKSES 2026-10-09 ke Neon `neon-rose-ladder`
+  (0000_cool_hiroim + 0001_auth + 0002_taxonomy applied; "migrations applied
+  successfully!"). Status lama GENERATED/BELUM-APPLIED resmi dicabut.
 
-## 4. Status Blob: BELUM TERUJI live
+## 4. Status Blob: TERUJI-live 2026-10-09
 
 - Implementasi: `src/server/storage/vercel-blob.ts` (`VercelBlobStorage`,
   server-only berlapis, satu-satunya pengimpor `@vercel/blob@2.8.1`).
@@ -73,6 +71,10 @@ is_flagged, is_correct nullable = belum dinilai, answered_at).
   set token di shell, panggil `blobStorage.upload()` dari route handler dev
   dengan PNG kecil + alt ≥10 karakter, verifikasi URL publik 200, lalu
   `blobStorage.delete()` + pastikan 404.
+- **HASIL uji-live 2026-10-09 (blocker DICABUT):** via `@vercel/blob`
+  put+del dengan token dari `.env.local` (env pull Neon integration):
+  PUT png 1px → URL publik `*.public.blob.vercel-storage.com` → GET **200**
+  → DEL → GET **404**. Round-trip TERUJI-live; P2.12 resmi lolos.
 - `VercelBlobStorage.getUrl()` V1 mengembalikan pathname apa adanya (bucket
   publik); URL penuh permanen disimpan ke `media_assets.blob_url` saat upload.
 

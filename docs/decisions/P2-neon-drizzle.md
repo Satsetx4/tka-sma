@@ -1,6 +1,6 @@
 # P2 — Fondasi Neon + Drizzle (P2.1 connection, P2.2 Drizzle)
 
-Status: fondasi SELESAI, koneksi **BELUM TERUJI** (blocker: §1).
+Status: fondasi SELESAI, koneksi **TERUJI-live 2026-10-09** (`SELECT 1 → ok: 1` ke Neon `neon-rose-ladder` via `DATABASE_URL` dari Vercel integration; status lama BELUM TERUJI resmi dicabut).
 Branch: `feat/p1-p2-kickoff`. Rujukan: `docs/ARCHITECTURE.md` (Database access,
 Security), `docs/DATABASE.md` (Migration discipline).
 
@@ -11,14 +11,20 @@ Security), `docs/DATABASE.md` (Migration discipline).
 - Lokal: salin `.env.example` → `.env.local` (di-gitignore via `*.local`), isi
   nilai asli, export ke shell sebelum `next dev` / skrip `db:*`.
 - Produksi: dashboard Vercel → tim sekawan → project **tka-sma** → Settings →
-  Environment Variables → `DATABASE_URL`.
-- **Blocker (2026-10-08):** Vercel CLI di mesin ini LOGOUT
+  Environment Variables → `DATABASE_URL` (TERISI OTOMATIS 2026-10-09 via
+  integration Neon `neon-rose-ladder`; `env ls` menunjukkan `DATABASE_URL` +
+  `POSTGRES_*` di Production/Preview/Development).
+- **Dulu blocker (2026-10-08):** Vercel CLI di mesin ini LOGOUT
   (`vercel whoami` → `Error: Not authorized`; scope `sekawan` tidak terbaca).
   Login ulang butuh approve owner di browser — di luar wewenang task ini, dan
   instruksi eksplisit melarang `vercel login` mandiri. Akibatnya nilai
   `DATABASE_URL` asli belum diperoleh; tidak ada `.env.local` dibuat, tidak ada
   secret yang ditulis ke mana pun. Owner cukup menempelkan connection string
   Neon (dari Vercel env / Neon dashboard) ke `.env.local` lalu §4 bisa dijalankan.
+- **RESOLUSI 2026-10-09:** owner approve terms Neon di browser → CLI
+  `vercel integration add neon` sukses (resource `neon-rose-ladder`,
+  connected ke `tka-sma`) → `env pull` mengisi `.env.local` lokal
+  (di-ignore git). Blocker resmi DICABUT.
 
 ## 2. Yang dipasang
 
@@ -78,19 +84,13 @@ dan `process.env` read) — itu wajar dan tetap server-only.
 | `npm test` (`node --test tests/*.test.ts`) | exit 0 |
 | `npm run build` (`next build`) | exit 0 |
 
-## 6. Status koneksi: BELUM TERUJI
+## 6. Status koneksi: TERUJI-live 2026-10-09
 
-`checkConnection()` (`SELECT 1`) belum bisa dijalankan lolos karena tidak ada
-`DATABASE_URL` asli (blocker §1). Percobaan tanpa env gagal secara eksplisit
-dengan pesan `[db] DATABASE_URL is not set` — guard terbukti bekerja, bukan
-koneksi yang teruji. Cara mengubah status menjadi TERUJI (owner, < 5 menit):
-
-```sh
-export $(cat .env.local | xargs)   # .env.local berisi DATABASE_URL asli
-node -e "import('./src/server/db/client.ts').then(...)"  # atau panggil checkConnection() dari route handler dev, harapkan true
-```
-
-Jangan ubah status ini menjadi TERUJI tanpa output `SELECT 1 → ok: 1` yang nyata.
+Dulu `checkConnection()` (`SELECT 1`) belum bisa dijalankan lolos karena tidak ada
+`DATABASE_URL` asli (blocker §1). Setelah resolusi §1, hasil nyata:
+`SELECT 1 → ok: 1` terhadap Neon `neon-rose-ladder`. Guard kegagalan tanpa env
+tetap terbukti (pesan `[db] DATABASE_URL is not set`), dan sekarang koneksi
+yang teruji juga terbukti — status resmi menjadi TERUJI.
 
 ## 7. Secret yang DICEK tidak bocor
 

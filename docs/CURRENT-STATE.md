@@ -1,6 +1,6 @@
 # Current State
 
-Updated: 2026-10-07
+Updated: 2026-10-09
 
 ## Repository
 
@@ -8,7 +8,7 @@ Updated: 2026-10-07
 - Canonical branch: `master`
 - Vite prototype archive: `archive/vite-prototype-2026-10-07`
 - Deployment project: Vercel `tka-sma`
-- Database: Neon PostgreSQL is provisioned
+- Database: Neon PostgreSQL `neon-rose-ladder` (provisioned via Vercel integration 2026-10-09, connected to project `tka-sma`; env `DATABASE_URL` + `POSTGRES_*` auto-set Production/Preview/Development)
 - Media storage: Vercel Blob store `tka-sma-assets`, region `sin1`
 
 ## Existing prototype
@@ -77,4 +77,18 @@ It must be preserved conceptually where useful, but the production foundation wi
 
 **HG1 APPROVED 2026-10-08.** Merged ke master: PR#5 (P1.1–P1.5 taksonomi DRAFT + P2.1–P2.2 + P2.8/P2.11/P3.1–P3.2), PR#6 (P2.5–P2.7 schema + P2.12–P2.13 Blob), PR#7 (P3.3–P3.13 renderer), PR#8 (P4.1–P4.18 CMS V1), PR#9 (P2.9–P2.10 auth), PR#10 (P1.6 FROZEN v1 + P2.3–P2.4 taxonomy tables + seed 1/5/10/32). Live tka-sma-umber.vercel.app 200 (deploy success).
 
-**STOP — 1 kebutuhan manusia tersisa:** kredensial uji-live: DATABASE_URL + BETTER_AUTH_SECRET/URL + BLOB_READ_WRITE_TOKEN (tempel ke .env.local lokal, jangan commit). Setelah ada: db:migrate + seed taksonomi + seed admin + uji login/CMS beneran → HG2.
+## Uji-live HG2 — SELESAI 2026-10-09
+
+**Dulu STOP nunggu kredensial, sekarang TERUJI-live semua** (via CLI, repo `C:/Users/USER/tka-sma`, branch master):
+
+- Koneksi: `SELECT 1 → ok: 1` (P2.1 TERUJI-live; status lama BELUM TERUJI resmi dicabut).
+- Migrasi: `npm run db:migrate` sukses — 0000 (12 tabel konten/belajar/tryout) + 0001 (auth) + 0002 (taxonomy) applied ke Neon.
+- Seed taksonomi: **1 subject + 5 topics + 10 subtopics + 32 skills** (MATH active; `SELECT COUNT(*)` terverifikasi di DB, bukan cuma log CLI).
+- Seed admin: `testka@admin.com` role admin + profil + credential (users=1, user_profiles=1, accounts credential=1). **Segera ganti password awal setelah login pertama.**
+- Env Vercel project `tka-sma`: `DATABASE_URL` (auto Neon) + `BLOB_READ_WRITE_TOKEN` (sudah ada) + `BETTER_AUTH_SECRET`/`BETTER_AUTH_URL`/`BETTER_AUTH_TRUSTED_ORIGINS` (ditambah 2026-10-09, sensitive). `.env.local` lokal lengkap (di-ignore git, tidak di-commit).
+- Uji login live https://tka-sma-umber.vercel.app: `POST /api/auth/sign-in/email` → **200** role admin; cookie `tka-sma.session_*` terpasang; baris `sessions` di Neon bertambah (DB-backed terbukti).
+- Uji CMS live dengan sesi: `GET /api/cms/questions` → **200 `{questions:[]}`**; `GET /admin` → **200**. Tanpa sesi: API → 401 pesan login, `/admin` → 307 ke `/login` (guard fail-closed terbukti).
+- Uji Blob live: PUT png kecil → URL publik **200** → DEL → **404** (round-trip TERUJI-live; P2.12 resmi lolos).
+- Deploy ulang production READY (alias tka-sma-umber + tka-sma-sekawan). `npm test` lokal 58/58 pass.
+
+**Next: minta review/approval owner untuk HG2** (taksonomi + platform soal + CMS). Setelah APPROVED → Fase 5 konten Math.

@@ -1,7 +1,9 @@
 # P2 — Seed Taksonomi Math v1 (P2.3 tabel + P2.4 seed)
 
-Status implementasi: **TERUJI (offline)** — typecheck/lint/test/build +
-`db:generate` exit 0. Status live: **BELUM-live** (blocker: §5).
+Status implementasi: **TERUJI-live 2026-10-09** — typecheck/lint/test/build +
+`db:generate` exit 0, migrasi applied ke Neon `neon-rose-ladder`, seed live
+terverifikasi `SELECT COUNT(*)` → 1/5/10/32 (status lama TERUJI-offline/
+BELUM-live resmi dicabut).
 Branch: `feat/p16-freeze-p23-seed`. Sumber isi: `docs/TKA-MATH-TAXONOMY.md`
 v1 (FROZEN — jangan ubah file itu; seed adalah turunan terverifikasi).
 
@@ -76,7 +78,10 @@ SELECT code, status FROM subjects WHERE code = 'MATH';  -- ekspektasi active
 | `npm run build` | exit 0 |
 | `DATABASE_URL=<dummy> npm run db:generate` | exit 0 (`drizzle/0002_taxonomy.sql`) |
 
-Status **TERUJI (offline)** / **BELUM-live**: seed TIDAK dijalankan tanpa
-DB (dokumentasi task melarang); `db:migrate` tidak dijalankan (butuh
-`DATABASE_URL` asli — Vercel CLI logout, `vercel login` dilarang).
-Setelah owner menempelkan connection string (§4), status menjadi TERUJI-live.
+Status **TERUJI-live 2026-10-09**: `npm run db:migrate` sukses (0000+0001+0002
+applied ke Neon `neon-rose-ladder`); seed live via
+`node --conditions=react-server scripts/seed-taxonomy.ts` → OK 1/5/10/32;
+verifikasi `SELECT COUNT(*)` → subjects 1, topics 5, subtopics 10, skills 32;
+`SELECT code,status FROM subjects WHERE code='MATH'` → active.
+Blocker lama (DATABASE_URL — Vercel CLI logout) RESMI DICABUT via
+`vercel integration add neon` + `env pull` (owner approve terms di browser).

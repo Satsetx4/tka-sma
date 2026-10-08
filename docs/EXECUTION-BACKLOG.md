@@ -232,7 +232,7 @@ Dependency: P0 complete
 Acceptance:
 server-only connection verified.
 
-QA (orchestrator, 2026-10-08): [x] client server-only berlapis (server-only + window guard) + checkConnection (SELECT 1). Status: BELUM TERUJI live — blocker kredensial (CLI logout, tak ada .env.local; nol secret di repo). Cara uji: tempel DATABASE_URL ke .env.local lalu panggil checkConnection.
+QA (orchestrator, 2026-10-08): [x] client server-only berlapis (server-only + window guard) + checkConnection (SELECT 1). UPDATE 2026-10-09: TERUJI-live — `SELECT 1 → ok: 1` ke Neon `neon-rose-ladder` (integration `vercel integration add neon` + `env pull` setelah owner approve terms). Blocker kredensial DICABUT.
 ## P2.2 Configure Drizzle
 Dependency: P2.1
 
@@ -258,7 +258,7 @@ Dependency: P2.3
 Acceptance:
 repeatable idempotent seed.
 
-QA: [x] 1/5/10/32 persis FROZEN (verifikasi regex independen: 32/32 skills, 10/10 subtopics, 5/5 topics MATCH). Upsert-by-code idempoten. BELUM dijalankan live (butuh DATABASE_URL); cara: export .env.local → db:migrate → node scripts/seed-taxonomy.ts → COUNT 1/5/10/32.
+QA: [x] 1/5/10/32 persis FROZEN (verifikasi regex independen: 32/32 skills, 10/10 subtopics, 5/5 topics MATCH). Upsert-by-code idempoten. UPDATE 2026-10-09: TERUJI-live — `db:migrate` sukses + seed live OK 1/5/10/32 + `SELECT COUNT(*)` terverifikasi di Neon (subjects 1, topics 5, subtopics 10, skills 32; MATH active).
 
 ## P2.5 Create question/content tables
 Dependency: P2.2
@@ -270,7 +270,7 @@ Tables:
 - [x] question_skills
 - [x] media_assets
 
-QA (orchestrator, 2026-10-08): [x] field persis DATABASE.md; migrasi drizzle/0000_cool_hiroim.sql generated (12 CREATE TABLE), BELUM applied (tanpa DATABASE_URL). FK antar-tabel-ada saja; subject/skill/user FK menyusul P2.3/P2.9.
+QA (orchestrator, 2026-10-08): [x] field persis DATABASE.md; migrasi drizzle/0000_cool_hiroim.sql generated (12 CREATE TABLE). UPDATE 2026-10-09: APPLIED-live — 0000+0001+0002 applied ke Neon `neon-rose-ladder` ("migrations applied successfully!"). FK antar-tabel-ada saja; subject/skill/user FK menyusul P2.3/P2.9.
 
 ## P2.6 Create learning tables
 Dependency: P2.2
@@ -310,7 +310,7 @@ Dependency: P2.8
 Acceptance:
 session survives refresh and protects private routes.
 
-QA (orchestrator, 2026-10-08): [x] Better Auth 1.7.7 server-only (email+password, sesi DB 7 hari + sliding 1 hari, cookie tka-sma, plugin admin+nextCookies; singleton malas agar build hijau tanpa env) + /api/auth/[...all] (503 JSON rapi tanpa env) + middleware (admin→307 /login?next, api/cms→401 JSON; edge-safe cek cookie) + login (server action, pesan generik, anti open-redirect) + unauthorized 403. LIVE: API 401 pesan login (bukan 503), admin→login 200 form email+kata sandi. BELUM-live: login sungguhan + refresh + migrate (butuh DATABASE_URL + BETTER_AUTH_SECRET + BETTER_AUTH_URL).
+QA (orchestrator, 2026-10-08): [x] Better Auth 1.7.7 server-only (email+password, sesi DB 7 hari + sliding 1 hari, cookie tka-sma, plugin admin+nextCookies; singleton malas agar build hijau tanpa env) + /api/auth/[...all] (503 JSON rapi tanpa env) + middleware (admin→307 /login?next, api/cms→401 JSON; edge-safe cek cookie) + login (server action, pesan generik, anti open-redirect) + unauthorized 403. LIVE: API 401 pesan login (bukan 503), admin→login 200 form email+kata sandi. UPDATE 2026-10-09: TERUJI-live — sign-in live 200 role admin, cookie sesi terpasang, baris sessions di Neon bertambah (DB-backed), CMS dengan sesi 200 `{questions:[]}`, /admin dengan sesi 200, tanpa sesi tetap 401/307 (fail-closed).
 
 ## P2.10 Add role model
 Dependency: P2.9
@@ -334,7 +334,7 @@ Dependency: P2.11
 Acceptance:
 authenticated server-side upload and delete.
 
-QA: [x] kode + 9 unit test validate lolos; BELUM TERUJI live (butuh BLOB_READ_WRITE_TOKEN owner).
+QA: [x] kode + 9 unit test validate lolos. UPDATE 2026-10-09: TERUJI-live — round-trip PUT png 1px → URL publik GET 200 → DEL → GET 404 (token BLOB_READ_WRITE_TOKEN dari env pull).
 
 ## P2.13 Media validation
 Dependency: P2.12
