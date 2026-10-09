@@ -1,19 +1,28 @@
 /**
  * P4.3 — Implementasi QuestionRepository di atas Drizzle + Neon.
+ * P5.1 — Resolusi taksonomi code↔id (subjects/skills).
  * SERVER-ONLY (diimpor hanya dari route handler / server component).
  *
- * Batas yang diketahui (tanpa ubah schema, tabel taksonomi P2.3 DITAHAN):
- * - subjectCode disimpan ke subject_id HANYA bila berbentuk UUID valid,
- *   selain itu NULL. Baca: subjectId UUID dikembalikan apa adanya.
- * - topicCode/subtopicCode belum punya kolom → TIDAK tersimpan.
- * - skillCodes disimpan ke question_skills HANYA yang berbentuk UUID.
- * Full-fidelity taksonomi tersedia di InMemoryQuestionRepository untuk
- * tes; setelah tabel P2.3 mendarat, petakan kode ↔ id di sini.
+ * Penyimpanan taksonomi (setelah tabel P2.3 mendarat):
+ * - subjectCode (code MATH / slug matematika / UUID) → subjects.id.
+ * - skillCodes (code MATH.… / UUID) → question_skills (skill UUIDs).
+ * - topicCode/subtopicCode TIDAK punya kolom (DATABASE.md) → DITURUNKAN
+ *   dari skill primer (skills → subtopics → topics) saat baca.
+ * - Kode tak dikenal → NULL/dilewati (fail-soft); validasi ketat milik
+ *   seed/test + publish gate, bukan repository.
  */
 import "server-only";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "../db/client.ts";
-import { questionOptions, questionSkills, questions } from "../db/schema.ts";
+import {
+  questionOptions,
+  questionSkills,
+  questions,
+  skills,
+  subjects,
+  subtopics,
+  topics,
+} from "../db/schema.ts";
 import type {
   CmsQuestion,
   CmsQuestionInput,
@@ -25,26 +34,126 @@ import type { QuestionRepository } from "./questions.ts";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function uuidAtauNull(nilai: string | undefined): string | null {
-  if (!nilai) return null;
-  return UUID_RE.test(nilai) ? nilai : null;
+type Db = ReturnType<typeof getDb>;
+
+function normalisasiKode(nilai: string | undefined): string {
+  return (nilai ?? "").trim();
+}
+
+/** Cari id subject dari code (MATH), slug (matematika), atau UUID langsung. */
+async function subjectIdDariKode(db: Db, nilai: string): Promise<string | null> {
+  const kode = normalisasiKode(nilai);
+  if (kode === "") return null;
+  if (UUID_RE.test(kode)) return kode;
+  const atas = kode.toUpperCase();
+  const baris = await db
+    .select({ id: subjects.id })
+    .from(subjects)
+    .where(inArray(subjects.code, [kode, atas]));
+  const cocok = baris[0];
+  if (cocok) return cocok.id;
+  const barisSlug = await db
+    .select({ id: subjects.id })
+    .from(subjects)
+    .where(eq(subjects.slug, kode.toLowerCase()));
+  return barisSlug[0]?.id ?? null;
+}
+
+/** Petakan daftar skill (code MATH.… atau UUID) ke id skill. Kode tak dikenal dilewati. */
+async function skillIdsDariKode(db: Db, daftar: string[]): Promise<string[]> {
+  const bersih = [...new Set(daftar.map(normalisasiKode).filter((k) => k !== ""))];
+  if (bersih.length === 0) return [];
+  const langsung = bersih.filter((k) => UUID_RE.test(k));
+  const kode = bersih.filter((k) => !UUID_RE.test(k));
+  const hasil: string[] = [...langsung];
+  if (kode.length > 0) {
+    const atas = kode.map((k) => k.toUpperCase());
+    const baris = await db
+      .select({ id: skills.id, code: skills.code })
+      .from(skills)
+      .where(inArray(skills.code, [...kode, ...atas]));
+    const olehKode = new Map(baris.map((b) => [b.code.toUpperCase(), b.id]));
+    for (const k of kode) {
+      const id = olehKode.get(k.toUpperCase());
+      if (id && !hasil.includes(id)) hasil.push(id);
+    }
+  }
+  return [...new Set(hasil)];
+}
+
+interface RantaiTaksonomi {
+  subjectCode: string;
+  topicCode: string;
+  subtopicCode: string;
+}
+
+/** Turunkan rantai taksonomi dari skill primer (skill pertama): skill → subtopic → topic → subject. */
+async function rantaiDariSkillPrimer(db: Db, skillIds: string[]): Promise<RantaiTaksonomi> {
+  const kosong: RantaiTaksonomi = { subjectCode: "", topicCode: "", subtopicCode: "" };
+  const primer = skillIds[0];
+  if (!primer) return kosong;
+  const barisSkill = await db
+    .select({ code: skills.code, subtopicId: skills.subtopicId })
+    .from(skills)
+    .where(eq(skills.id, primer));
+  const s = barisSkill[0];
+  if (!s) return kosong;
+  const barisSub = await db
+    .select({ code: subtopics.code, topicId: subtopics.topicId })
+    .from(subtopics)
+    .where(eq(subtopics.id, s.subtopicId));
+  const sub = barisSub[0];
+  if (!sub) return kosong;
+  const barisTopik = await db
+    .select({ code: topics.code, subjectId: topics.subjectId })
+    .from(topics)
+    .where(eq(topics.id, sub.topicId));
+  const topik = barisTopik[0];
+  if (!topik) return { ...kosong, subtopicCode: sub.code };
+  const barisSubject = await db
+    .select({ code: subjects.code })
+    .from(subjects)
+    .where(eq(subjects.id, topik.subjectId));
+  return {
+    subjectCode: barisSubject[0]?.code ?? "",
+    topicCode: topik.code,
+    subtopicCode: sub.code,
+  };
+}
+
+/** Code skill (MATH.…) untuk daftar id skill (urutan input dipertahankan). */
+async function skillCodesDariIds(db: Db, ids: string[]): Promise<string[]> {
+  if (ids.length === 0) return [];
+  const baris = await db
+    .select({ id: skills.id, code: skills.code })
+    .from(skills)
+    .where(inArray(skills.id, ids));
+  const olehId = new Map(baris.map((b) => [b.id, b.code]));
+  return ids.map((id) => olehId.get(id)).filter((c): c is string => typeof c === "string");
 }
 
 type BarisSoal = typeof questions.$inferSelect;
 type BarisOpsi = typeof questionOptions.$inferSelect;
 type BarisSkill = typeof questionSkills.$inferSelect;
 
-function rakit(q: BarisSoal, opsi: BarisOpsi[], skill: BarisSkill[]): CmsQuestion {
+async function rakit(db: Db, q: BarisSoal, opsi: BarisOpsi[], skill: BarisSkill[]): Promise<CmsQuestion> {
   const explanationBlocks = (q.explanationBlocks ?? []) as CmsQuestion["contentBlocks"];
   const commonMistake = (q.commonMistake ?? undefined) as CmsQuestion["contentBlocks"] | undefined;
   const solvingTip = (q.solvingTip ?? undefined) as CmsQuestion["contentBlocks"] | undefined;
+  const skillIds = skill.map((s) => s.skillId);
+  const rantai = await rantaiDariSkillPrimer(db, skillIds);
+  let subjectCode = rantai.subjectCode;
+  if (subjectCode === "" && q.subjectId) {
+    const baris = await db.select({ code: subjects.code }).from(subjects).where(eq(subjects.id, q.subjectId));
+    subjectCode = baris[0]?.code ?? "";
+  }
   return {
     id: q.id,
     code: q.code,
-    subjectCode: q.subjectId ?? "",
-    topicCode: "",
-    subtopicCode: "",
-    skillCodes: skill.map((s) => s.skillId),
+    subjectCode,
+    topicCode: rantai.topicCode,
+    subtopicCode: rantai.subtopicCode,
+    skillCodes: await skillCodesDariIds(db, skillIds),
     difficulty: q.difficulty,
     questionType: q.questionType,
     contentBlocks: (q.contentBlocks ?? []) as CmsQuestion["contentBlocks"],
@@ -86,7 +195,7 @@ class DrizzleQuestionRepository implements QuestionRepository {
       .select()
       .from(questionSkills)
       .where(eq(questionSkills.questionId, id));
-    return rakit(q, opsi, skill);
+    return rakit(this.db, q, opsi, skill);
   }
 
   async list(filter: QuestionFilter = {}): Promise<CmsQuestion[]> {
@@ -126,11 +235,12 @@ class DrizzleQuestionRepository implements QuestionRepository {
   }
 
   async create(input: CmsQuestionInput, actorId: string): Promise<CmsQuestion> {
+    const subjectId = await subjectIdDariKode(this.db, input.subjectCode);
     const baris = await this.db
       .insert(questions)
       .values({
         code: input.code,
-        subjectId: uuidAtauNull(input.subjectCode),
+        subjectId,
         questionType: input.questionType,
         difficulty: input.difficulty,
         contentBlocks: input.contentBlocks,
@@ -155,13 +265,13 @@ class DrizzleQuestionRepository implements QuestionRepository {
   async update(id: string, patch: CmsQuestionPatch, _actorId: string): Promise<CmsQuestion | null> {
     const lama = await this.muat(id);
     if (!lama) return null;
+    const subjectId =
+      patch.subjectCode !== undefined ? await subjectIdDariKode(this.db, patch.subjectCode) : undefined;
     await this.db
       .update(questions)
       .set({
         ...(patch.code !== undefined ? { code: patch.code } : {}),
-        ...(patch.subjectCode !== undefined
-          ? { subjectId: uuidAtauNull(patch.subjectCode) }
-          : {}),
+        ...(subjectId !== undefined ? { subjectId } : {}),
         ...(patch.questionType !== undefined ? { questionType: patch.questionType } : {}),
         ...(patch.difficulty !== undefined ? { difficulty: patch.difficulty } : {}),
         ...(patch.contentBlocks !== undefined ? { contentBlocks: patch.contentBlocks } : {}),
@@ -191,6 +301,7 @@ class DrizzleQuestionRepository implements QuestionRepository {
     return this.muat(id);
   }
 
+  /** Tulis opsi + relasi skill. skillCodes boleh code (MATH.…) atau UUID — diresolusi ke id. */
   private async tulisOpsiDanSkill(
     questionId: string,
     opsi: CmsQuestion["options"],
@@ -208,10 +319,10 @@ class DrizzleQuestionRepository implements QuestionRepository {
       );
     }
     await this.db.delete(questionSkills).where(eq(questionSkills.questionId, questionId));
-    const uuids = skillCodes.filter((k) => UUID_RE.test(k));
-    if (uuids.length > 0) {
+    const ids = await skillIdsDariKode(this.db, skillCodes);
+    if (ids.length > 0) {
       await this.db.insert(questionSkills).values(
-        uuids.map((skillId, i) => ({
+        ids.map((skillId, i) => ({
           questionId,
           skillId,
           weight: 1,
