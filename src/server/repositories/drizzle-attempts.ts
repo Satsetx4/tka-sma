@@ -155,6 +155,27 @@ class DrizzleAttemptRepository implements AttemptRepository {
       answeredAt: b.answeredAt.toISOString(),
     }));
   }
+
+  async listAttemptsByUser(userId: string, batas = 50): Promise<AttemptRecord[]> {
+    const n = Math.max(1, Math.min(batas, 200));
+    const baris = await this.db
+      .select()
+      .from(questionAttempts)
+      .where(eq(questionAttempts.userId, userId))
+      .orderBy(desc(questionAttempts.answeredAt))
+      .limit(n);
+    return baris.map((b) => ({
+      id: b.id,
+      userId: b.userId,
+      sessionId: b.sessionId,
+      questionId: b.questionId,
+      selectedAnswer: b.selectedAnswer,
+      isCorrect: b.isCorrect,
+      durationSeconds: b.durationSeconds,
+      difficultySnapshot: b.difficultySnapshot,
+      answeredAt: b.answeredAt.toISOString(),
+    }));
+  }
 }
 
 export function createDrizzleAttemptRepository(): AttemptRepository {
