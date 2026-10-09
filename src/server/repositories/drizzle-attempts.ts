@@ -39,13 +39,14 @@ async function subjectIdDariKode(db: Db, nilai: string): Promise<string | null> 
 
 type BarisSesi = typeof practiceSessions.$inferSelect;
 
-function keModel(b: BarisSesi, questionIds: string[] = [], topicCode: string | null = null): PracticeSession {
+function keModel(b: BarisSesi): PracticeSession {
+  const questionIds = Array.isArray(b.questionIds) ? (b.questionIds as string[]) : [];
   return {
     id: b.id,
     userId: b.userId,
     mode: b.mode as PracticeMode,
     subjectId: b.subjectId,
-    topicCode,
+    topicCode: b.topicCode,
     questionIds,
     startedAt: b.startedAt.toISOString(),
     finishedAt: b.finishedAt ? b.finishedAt.toISOString() : null,
@@ -81,12 +82,14 @@ class DrizzleAttemptRepository implements AttemptRepository {
         userId: sesi.userId,
         mode: sesi.mode,
         subjectId,
+        topicCode: sesi.topicCode,
+        questionIds: sesi.questionIds,
         questionCount: sesi.questionCount,
       })
       .returning();
     const b = baris[0];
     if (!b) throw new Error("Gagal membuat sesi (DB tidak mengembalikan baris).");
-    return keModel(b, sesi.questionIds, sesi.topicCode);
+    return keModel(b);
   }
 
   async finishSession(id: string, benar: number, durasiDetik: number | null): Promise<PracticeSession | null> {
@@ -103,7 +106,7 @@ class DrizzleAttemptRepository implements AttemptRepository {
       .where(eq(practiceSessions.id, id))
       .returning();
     const b = baris[0];
-    return b ? keModel(b, lama.questionIds, lama.topicCode) : null;
+    return b ? keModel(b) : null;
   }
 
   async recordAttempt(a: Omit<AttemptRecord, "id" | "answeredAt">): Promise<AttemptRecord> {
