@@ -15,16 +15,19 @@ Aturan main:
 4. Soal harus orisinal internal — dilarang copy bank soal bimbel/kompetitor.
 5. Setelah P5.6 selesai → HG3 (loop belajar murid). Setelah HG3 → Fase 10–11.
 
-## Papan Fase 5 (update: 2026-10-09)
+## Papan Fase 5 (update: 2026-10-09, sinkron dgn label GitHub)
 
 | Status | Kartu |
 |---|---|
-| todo | #12 [P5.1] 10 soal teks/math pertama |
-| backlog | #13 [P5.2] 5 soal tabel/chart |
-| backlog | #14 [P5.3] 5 soal grafik fungsi |
-| backlog | #15 [P5.4] 5 soal gambar/diagram |
+| done | #12 [P5.1] 10 soal teks/math pertama (PR #20, review PASS) |
+| done | #13 [P5.2] 5 soal tabel/chart (PR #21, review PASS) |
+| done | #14 [P5.3] 5 soal grafik fungsi (PR #22, review PASS) |
+| review | #15 [P5.4] 5 soal gambar/diagram (PR #23 MERGED, nunggu review kamu) |
 | backlog | #16 [P5.5] contoh pilihan ganda kompleks |
 | backlog | #17 [P5.6] 30–50 soal direview |
+
+Live DB (Neon, terverifikasi 2026-10-09): **25/25 approved**, semua `single_choice`.
+Live web: home 200, `/admin` 307 → `/login` (guard bener).
 
 Urutan: P5.1 dulu (fondasi + pola seed/CMS). P5.2–P5.5 setelah P5.1. P5.6 terakhir (kumpulkan + dokumentasi cakupan).
 
