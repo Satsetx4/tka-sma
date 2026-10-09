@@ -28,6 +28,8 @@ export interface AttemptRepository {
   finishSession(id: string, benar: number, durasiDetik: number | null): Promise<PracticeSession | null>;
   recordAttempt(a: Omit<AttemptRecord, "id" | "answeredAt">): Promise<AttemptRecord>;
   listAttempts(sessionId: string): Promise<AttemptRecord[]>;
+  /** P6.5 — riwayat attempt milik satu user lintas sesi (terbaru dulu). */
+  listAttemptsByUser(userId: string, batas?: number): Promise<AttemptRecord[]>;
 }
 
 function cocokPemilik(userId: string, sesiUserId: string): boolean {
@@ -78,6 +80,14 @@ export class InMemoryAttemptRepository implements AttemptRepository {
     return [...this.upaya.values()]
       .filter((a) => a.sessionId === sessionId)
       .sort((a, b) => (a.answeredAt < b.answeredAt ? -1 : 1));
+  }
+
+  async listAttemptsByUser(userId: string, batas = 50): Promise<AttemptRecord[]> {
+    const n = Math.max(1, Math.min(batas, 200));
+    return [...this.upaya.values()]
+      .filter((a) => a.userId === userId)
+      .sort((a, b) => (a.answeredAt < b.answeredAt ? 1 : -1))
+      .slice(0, n);
   }
 }
 
