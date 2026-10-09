@@ -203,7 +203,7 @@ export const mediaAssets = pgTable(
 // user_id berupa teks (id auth; tabel users lahir di P2.9+) TANPA FK.
 // ---------------------------------------------------------------------------
 
-/** Sesi latihan. subject_id TANPA FK (menyusul P2.3). */
+/** Sesi latihan. subject_id TANPA FK (menyusul P2.3). P6.2: topic_code + question_ids. */
 export const practiceSessions = pgTable(
   "practice_sessions",
   {
@@ -211,6 +211,8 @@ export const practiceSessions = pgTable(
     userId: text("user_id").notNull(),
     mode: practiceModeEnum("mode").notNull(),
     subjectId: uuid("subject_id"),
+    topicCode: text("topic_code"),
+    questionIds: jsonb("question_ids").$type<string[]>(),
     startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
     finishedAt: timestamp("finished_at", { withTimezone: true }),
     questionCount: integer("question_count").notNull().default(0),
