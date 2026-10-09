@@ -6,7 +6,8 @@ Ubah status cukup ganti label di Issue — papan ini cerminannya.
 Kolom: `backlog` (antrean) → `todo` (siap) → `in-progress` (dikerjakan) →
 `review` (nunggu review/QA) → `done` (selesai).
 
-Milestone: **Fase 5 — Konten Math Awal** (GitHub milestone #1).
+Milestone: **Fase 5 — Konten Math Awal** (GitHub milestone #1, SELESAI 100%)
++**Fase 6 — Practice Engine** (GitHub milestone #2, BERJALAN).
 
 Aturan main:
 1. Satu kartu dikerjakan sampai review, baru ambil kartu berikut (kecuali P5.2–P5.5 boleh paralel setelah P5.1 selesai karena dependensi sama).
@@ -22,9 +23,28 @@ Aturan main:
 | done | #12 [P5.1] 10 soal teks/math pertama (PR #20, review PASS) |
 | done | #13 [P5.2] 5 soal tabel/chart (PR #21, review PASS) |
 | done | #14 [P5.3] 5 soal grafik fungsi (PR #22, review PASS) |
-| review | #15 [P5.4] 5 soal gambar/diagram (PR #23 MERGED, nunggu review kamu) |
-| backlog | #16 [P5.5] contoh pilihan ganda kompleks |
-| backlog | #17 [P5.6] 30–50 soal direview |
+| done | #15 [P5.4] 5 soal gambar/diagram (PR #23, review PASS) |
+| done | #16 [P5.5] contoh pilihan ganda kompleks (PR #25, review PASS) |
+| done | #17 [P5.6] 30 soal + cakupan (PR #26, review PASS) |
+
+## Papan Fase 6 (update: 2026-10-09)
+
+| Status | Kartu |
+|---|---|
+| in-progress | #27 [P6.1] service sesi latihan |
+| backlog | #28 [P6.2] payload soal aman (tanpa kunci) |
+| backlog | #29 [P6.3] endpoint submit jawaban |
+| backlog | #30 [P6.4] validasi jawaban server-side |
+| backlog | #31 [P6.5] simpan attempt |
+| backlog | #32 [P6.6] pembahasan setelah jawab |
+| backlog | #33 [P6.7] pemilih Quick Practice |
+| backlog | #34 [P6.8] pemilih Topic Practice |
+| backlog | #35 [P6.9] UI progres sesi |
+| backlog | #36 [P6.10] UI hasil sesi |
+| backlog | #37 [P6.11] resume sesi terputus |
+| backlog | #38 [P6.12] tes end-to-end practice |
+
+Urutan: P6.1 dulu (fondasi sesi). P6.2→P6.6 rantai API (berurutan). P6.7–P6.11 UI paralel setelah API jadi. P6.12 terakhir (end-to-end).
 
 Live DB (Neon, terverifikasi 2026-10-09): **25/25 approved**, semua `single_choice`.
 Live web: home 200, `/admin` 307 → `/login` (guard bener).
