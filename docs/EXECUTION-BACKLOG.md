@@ -544,7 +544,7 @@ incomplete question cannot publish.
 
 QA: [x] gagal → 422 + missing[]; validasi akademik manusia tetap di luar sistem.
 
-## HG2 — STOP: Taxonomy + Question Platform + CMS approval required
+## HG2 — APPROVED oleh owner 2026-10-09 ("APPROVE HG2")
 
 ```
 AUTO_CONTINUE = no
