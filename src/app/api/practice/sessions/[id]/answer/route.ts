@@ -9,6 +9,9 @@
  *
  * P6.3 menyimpan attempt dengan isCorrect=false SEMENTARA (belum dinilai —
  * penilaian server-side = P6.4). Respons TIDAK memuat kunci/pembahasan.
+ * P6.4: attempt dinilai SERVER-SIDE via nilaiJawaban (single + multiple)
+ * sebelum disimpan; respons tetap TANPA kunci/pembahasan (hanya benar/salah
+ * milik sendiri — bukan kunci soalnya).
  */
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
@@ -16,6 +19,7 @@ import { getSession } from "../../../../../../server/auth/guard.ts";
 import { getAttemptRepository } from "../../../../../../server/repositories/attempts.ts";
 import { getQuestionRepository } from "../../../../../../server/repositories/questions.ts";
 import { validasiSubmit } from "../../../../../../domain/practice/submit-model.ts";
+import { nilaiJawaban } from "../../../../../../domain/practice/grading.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -60,12 +64,18 @@ export async function POST(request: NextRequest, { params }: Ctx): Promise<NextR
     return NextResponse.json({ error: "Jawaban tidak valid.", errors: cek.errors }, { status: 422 });
   }
 
+  const benar = nilaiJawaban(
+    soal.questionType,
+    soal.options.map((o) => ({ isCorrect: o.isCorrect })),
+    cek.data.selectedAnswer as { optionIndex: number } | { optionIndexes: number[] },
+  );
+
   const simpan = await repo.recordAttempt({
     userId: sesi.id,
     sessionId: id,
     questionId: qid,
     selectedAnswer: cek.data.selectedAnswer,
-    isCorrect: false,
+    isCorrect: benar,
     durationSeconds: cek.data.durationSeconds,
     difficultySnapshot: soal.difficulty,
   });
@@ -76,10 +86,10 @@ export async function POST(request: NextRequest, { params }: Ctx): Promise<NextR
         id: simpan.id,
         sessionId: simpan.sessionId,
         questionId: simpan.questionId,
+        isCorrect: simpan.isCorrect,
         durationSeconds: simpan.durationSeconds,
         answeredAt: simpan.answeredAt,
       },
-      dinilaiDi: "P6.4 (penilaian server-side menyusul)",
     },
     { status: 201 },
   );
